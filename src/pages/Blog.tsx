@@ -168,24 +168,24 @@ const Blog = () => {
         </div>
 
         <div className="container mx-auto px-4 py-12">
-          <div className="flex flex-col lg:flex-row gap-8">
+          <div className="flex flex-col lg:flex-row gap-6 lg:gap-8">
             {/* Sidebar */}
-            <div className="lg:w-1/4">
+            <div className="lg:w-1/4 order-2 lg:order-1">
               <div className="sticky top-24">
-                <div className="bg-white rounded-lg shadow-sm border p-6 mb-6">
-                  <h3 className="text-lg font-bold mb-6 text-gray-900">Categories</h3>
+                <div className="bg-white rounded-lg shadow-sm border p-4 md:p-6 mb-4 md:mb-6">
+                  <h3 className="text-base md:text-lg font-bold mb-4 md:mb-6 text-gray-900">Categories</h3>
                   <ul className="space-y-1">
                     {categories.map((category, index) => (
                       <li key={index}>
                         <button 
                           onClick={() => setActiveFilter(category)}
-                          className={`flex items-center w-full py-3 px-3 rounded-lg text-left transition-colors ${
+                          className={`flex items-center w-full py-2 md:py-3 px-2 md:px-3 rounded-lg text-left transition-colors text-sm md:text-base ${
                             activeFilter === category
                               ? 'bg-blue-50 text-blue-600 font-medium' 
                               : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
                           }`}
                         >
-                          <Tag className={`h-4 w-4 mr-3 ${activeFilter === category ? 'text-blue-600' : 'text-gray-400'}`} />
+                          <Tag className={`h-3 w-3 md:h-4 md:w-4 mr-2 md:mr-3 ${activeFilter === category ? 'text-blue-600' : 'text-gray-400'}`} />
                           {category}
                         </button>
                       </li>
@@ -193,13 +193,13 @@ const Blog = () => {
                   </ul>
                 </div>
                 
-                <div className="bg-white rounded-lg shadow-sm border p-6">
-                  <h3 className="text-lg font-bold mb-6 text-gray-900">Popular Tags</h3>
-                  <div className="flex flex-wrap gap-2">
+                <div className="bg-white rounded-lg shadow-sm border p-4 md:p-6">
+                  <h3 className="text-base md:text-lg font-bold mb-4 md:mb-6 text-gray-900">Popular Tags</h3>
+                  <div className="flex flex-wrap gap-1.5 md:gap-2">
                     {popularTags.map((tag, index) => (
                       <span 
                         key={index}
-                        className="bg-gray-100 px-3 py-1 rounded-full text-sm font-medium text-gray-700 hover:bg-blue-50 hover:text-blue-600 cursor-pointer transition-colors"
+                        className="bg-gray-100 px-2 md:px-3 py-1 rounded-full text-xs md:text-sm font-medium text-gray-700 hover:bg-blue-50 hover:text-blue-600 cursor-pointer transition-colors"
                       >
                         {tag}
                       </span>
@@ -210,15 +210,15 @@ const Blog = () => {
             </div>
             
             {/* Main Content */}
-            <div className="lg:w-3/4">
-              <div className="mb-8 flex items-center justify-between">
-                <h2 className="text-2xl font-bold text-gray-900">
+            <div className="lg:w-3/4 order-1 lg:order-2">
+              <div className="mb-6 md:mb-8 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                <h2 className="text-xl md:text-2xl font-bold text-gray-900">
                   {searchTerm ? `Search Results for "${searchTerm}"` : 'Latest Articles'}
-                  <span className="text-sm font-normal text-gray-500 ml-2">
+                  <span className="text-xs md:text-sm font-normal text-gray-500 ml-2">
                     ({filteredPosts.length} post{filteredPosts.length !== 1 ? 's' : ''})
                   </span>
                 </h2>
-                <select className="border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                <select className="border border-gray-300 rounded-lg px-3 md:px-4 py-1.5 md:py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm">
                   <option>Most Recent</option>
                   <option>Most Popular</option>
                   <option>Trending</option>
@@ -226,11 +226,11 @@ const Blog = () => {
               </div>
 
               {filteredPosts.length === 0 ? (
-                <div className="text-center py-12">
-                  <p className="text-gray-600 text-lg">
+                <div className="text-center py-8 md:py-12">
+                  <p className="text-gray-600 text-base md:text-lg">
                     {searchTerm ? `No blog posts found matching "${searchTerm}"` : 'No blog posts available at the moment.'}
                   </p>
-                  <p className="text-gray-500 mt-2">
+                  <p className="text-gray-500 mt-2 text-sm md:text-base">
                     {searchTerm ? 'Try searching with different keywords.' : 'Check back soon for exciting travel stories!'}
                   </p>
                 </div>
@@ -242,7 +242,7 @@ const Blog = () => {
                       initial={{ opacity: 0, y: 20 }}
                       animate={{ opacity: 1, y: 0 }}
                       transition={{ duration: 0.5 }}
-                      className="mb-8"
+                      className="mb-6 md:mb-8"
                     >
                       <div className="bg-white rounded-lg shadow-sm border overflow-hidden">
                         <div className="flex flex-col lg:flex-row">
@@ -251,22 +251,22 @@ const Blog = () => {
                               <img 
                                 src={featuredPost.image}
                                 alt={featuredPost.title}
-                                className="w-full h-64 lg:h-full object-cover"
+                                className="w-full h-48 md:h-64 lg:h-full object-cover"
                               />
                             )}
                           </div>
-                          <div className="lg:w-1/2 p-8">
-                            <div className="inline-block bg-purple-100 text-purple-600 text-sm font-medium px-3 py-1 rounded-full mb-4">
+                          <div className="lg:w-1/2 p-4 md:p-6 lg:p-8">
+                            <div className="inline-block bg-purple-100 text-purple-600 text-xs md:text-sm font-medium px-2 md:px-3 py-1 rounded-full mb-3 md:mb-4">
                               Featured
                             </div>
-                            <h3 className="text-2xl lg:text-3xl font-bold mb-4 text-gray-900 leading-tight">
+                            <h3 className="text-lg md:text-xl lg:text-2xl xl:text-3xl font-bold mb-3 md:mb-4 text-gray-900 leading-tight">
                               {featuredPost.title}
                             </h3>
-                            <p className="text-gray-600 mb-6 text-sm leading-relaxed">
+                            <p className="text-gray-600 mb-4 md:mb-6 text-xs md:text-sm leading-relaxed">
                               {featuredPost.excerpt ? featuredPost.excerpt.substring(0, 150) + '...' : ''}
                             </p>
-                            <div className="flex items-center mb-6">
-                              <Avatar className="w-12 h-12 mr-4">
+                            <div className="flex items-center mb-4 md:mb-6">
+                              <Avatar className="w-8 h-8 md:w-10 md:h-10 lg:w-12 lg:h-12 mr-3 md:mr-4">
                                 {featuredPost.author_image ? (
                                   <AvatarImage 
                                     src={featuredPost.author_image} 
@@ -275,21 +275,21 @@ const Blog = () => {
                                   />
                                 ) : null}
                                 <AvatarFallback className="bg-travel-primary/20 text-travel-primary">
-                                  <User className="h-6 w-6" />
+                                  <User className="h-4 w-4 md:h-5 md:w-5 lg:h-6 lg:w-6" />
                                 </AvatarFallback>
                               </Avatar>
                               <div>
-                                <div className="font-semibold text-gray-900">{featuredPost.author}</div>
-                                <div className="text-gray-500 text-sm">Travel Writer</div>
+                                <div className="font-semibold text-gray-900 text-sm md:text-base">{featuredPost.author}</div>
+                                <div className="text-gray-500 text-xs md:text-sm">Travel Writer</div>
                               </div>
-                              <div className="ml-auto flex items-center text-gray-500 text-sm">
-                                <Calendar className="h-4 w-4 mr-2" />
+                              <div className="ml-auto flex items-center text-gray-500 text-xs md:text-sm">
+                                <Calendar className="h-3 w-3 md:h-4 md:w-4 mr-1 md:mr-2" />
                                 {formatDate(featuredPost.date_written || featuredPost.created_at)}
                               </div>
                             </div>
                             <button 
                               onClick={() => navigate(`/blog/${featuredPost.id}`)}
-                              className="text-blue-600 font-semibold hover:text-blue-700 transition-colors"
+                              className="text-blue-600 font-semibold hover:text-blue-700 transition-colors text-sm md:text-base"
                             >
                               Read Full Article →
                             </button>
@@ -300,7 +300,7 @@ const Blog = () => {
                   )}
                   
                   {/* Regular Posts Grid */}
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
                     {regularPosts.map((post, index) => (
                       <motion.div
                         key={post.id}
@@ -314,24 +314,24 @@ const Blog = () => {
                               <img 
                                 src={post.image}
                                 alt={post.title}
-                                className="w-full h-48 object-cover"
+                                className="w-full h-40 md:h-48 object-cover"
                               />
                             )}
-                            <div className="absolute top-4 left-4 bg-white/95 backdrop-blur-sm px-3 py-1 rounded-full text-sm font-medium text-blue-600">
+                            <div className="absolute top-2 md:top-4 left-2 md:left-4 bg-white/95 backdrop-blur-sm px-2 md:px-3 py-1 rounded-full text-xs md:text-sm font-medium text-blue-600">
                               {post.categories && post.categories.length > 0 ? post.categories[0] : post.category || 'Latest'}
                             </div>
                           </div>
-                          <div className="p-6">
-                            <h3 className="text-xl font-bold mb-3 text-gray-900 line-clamp-2 leading-tight">
+                          <div className="p-4 md:p-6">
+                            <h3 className="text-base md:text-lg lg:text-xl font-bold mb-2 md:mb-3 text-gray-900 line-clamp-2 leading-tight">
                               {post.title}
                             </h3>
-                            <p className="text-gray-600 mb-4 line-clamp-3 leading-relaxed">
+                            <p className="text-gray-600 mb-3 md:mb-4 line-clamp-3 leading-relaxed text-sm md:text-base">
                               {post.excerpt}
                             </p>
                             
                             <div className="flex items-center justify-between">
                               <div className="flex items-center">
-                                <Avatar className="w-8 h-8 mr-3">
+                                <Avatar className="w-6 h-6 md:w-8 md:h-8 mr-2 md:mr-3">
                                   {post.author_image ? (
                                     <AvatarImage 
                                       src={post.author_image} 
@@ -340,20 +340,20 @@ const Blog = () => {
                                     />
                                   ) : null}
                                   <AvatarFallback className="bg-travel-primary/20 text-travel-primary">
-                                    <User className="h-4 w-4" />
+                                    <User className="h-3 w-3 md:h-4 md:w-4" />
                                   </AvatarFallback>
                                 </Avatar>
-                                <span className="text-sm font-medium text-gray-700">{post.author}</span>
+                                <span className="text-xs md:text-sm font-medium text-gray-700 truncate">{post.author}</span>
                               </div>
-                              <div className="flex items-center text-gray-500 text-sm">
-                                <Calendar className="h-4 w-4 mr-1" />
+                              <div className="flex items-center text-gray-500 text-xs">
+                                <Calendar className="h-3 w-3 mr-1" />
                                 {formatDate(post.date_written || post.created_at)}
                               </div>
                             </div>
                             
                             <button 
                               onClick={() => navigate(`/blog/${post.id}`)}
-                              className="mt-4 text-blue-600 font-semibold hover:text-blue-700 transition-colors"
+                              className="mt-3 md:mt-4 text-blue-600 font-semibold hover:text-blue-700 transition-colors text-sm md:text-base"
                             >
                               Read More →
                             </button>
@@ -366,8 +366,8 @@ const Blog = () => {
               )}
               
               {regularPosts.length > 0 && (
-                <div className="mt-12 flex justify-center">
-                  <button className="inline-flex items-center justify-center px-8 py-3 border-2 border-travel-primary text-travel-primary font-semibold rounded-full hover:bg-travel-primary hover:text-white transition-colors">
+                <div className="mt-8 md:mt-12 flex justify-center">
+                  <button className="inline-flex items-center justify-center px-6 md:px-8 py-2.5 md:py-3 border-2 border-travel-primary text-travel-primary font-semibold rounded-full hover:bg-travel-primary hover:text-white transition-colors text-sm md:text-base">
                     Load More Articles
                   </button>
                 </div>

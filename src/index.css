@@ -117,6 +117,66 @@
   background-color: hsl(var(--travel-dark));
 }
 
+/* Mobile-specific utilities */
+@media (max-width: 768px) {
+  .mobile-padding {
+    padding-left: 1rem;
+    padding-right: 1rem;
+  }
+  
+  .mobile-text-sm {
+    font-size: 0.875rem;
+    line-height: 1.25rem;
+  }
+  
+  .mobile-spacing {
+    margin-bottom: 1rem;
+  }
+}
+
+/* Responsive text utilities */
+.responsive-text-xs {
+  font-size: 0.75rem;
+}
+
+@media (min-width: 768px) {
+  .responsive-text-xs {
+    font-size: 0.875rem;
+  }
+}
+
+.responsive-text-sm {
+  font-size: 0.875rem;
+}
+
+@media (min-width: 768px) {
+  .responsive-text-sm {
+    font-size: 1rem;
+  }
+}
+
+/* Line clamp utilities for mobile */
+.line-clamp-1 {
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 1;
+}
+
+.line-clamp-2 {
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+}
+
+.line-clamp-3 {
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 3;
+}
+
 /* Custom gradients */
 .bg-gradient-hero {
   background: linear-gradient(135deg, rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.3));
@@ -139,6 +199,13 @@
   @apply bg-travel-primary text-white px-6 py-3 rounded-lg font-semibold hover:bg-travel-primary/90 transition-colors shadow-lg;
 }
 
+/* Mobile travel button */
+@media (max-width: 768px) {
+  .travel-btn {
+    @apply px-4 py-2.5 text-sm;
+  }
+}
+
 /* Search container */
 .search-container {
   backdrop-filter: blur(10px);
@@ -147,6 +214,13 @@
 /* Pill button styles */
 .pill-button {
   @apply bg-white/20 backdrop-blur-sm text-white px-4 py-2 rounded-full hover:bg-white/30 transition-colors text-sm font-medium;
+}
+
+/* Mobile pill button */
+@media (max-width: 768px) {
+  .pill-button {
+    @apply px-3 py-1.5 text-xs;
+  }
 }
 
 /* Navigation link styles */
@@ -161,4 +235,38 @@
 
 .destination-card:hover {
   transform: translateY(-5px);
+}
+
+/* Mobile destination card */
+@media (max-width: 768px) {
+  .destination-card:hover {
+    transform: translateY(-2px);
+  }
+}
+
+/* Mobile-specific grid adjustments */
+@media (max-width: 640px) {
+  .mobile-grid-adjust {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0.75rem;
+  }
+}
+
+@media (min-width: 641px) and (max-width: 768px) {
+  .mobile-grid-adjust {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1rem;
+  }
+}
+
+/* Ensure proper touch targets on mobile */
+@media (max-width: 768px) {
+  button, .cursor-pointer {
+    min-height: 44px;
+    min-width: 44px;
+  }
+  
+  input, select, textarea {
+    min-height: 44px;
+  }
 }

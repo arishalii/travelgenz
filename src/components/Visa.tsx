@@ -111,15 +111,15 @@ const Visa: React.FC = () => {
     origin !== "" || destination !== "" || visitType !== "";
 
   return (
-    <section className="py-12 bg-white relative">
+    <section className="py-8 md:py-12 bg-white relative">
       <div className="container mx-auto px-4 text-center">
-        <h2 className="text-3xl font-bold mb-6">
+        <h2 className="text-2xl md:text-3xl font-bold mb-4 md:mb-6">
           Visa{" "}
           <span className="bg-gradient-to-r from-[#f857a6] to-[#a75fff] bg-clip-text text-transparent">
             Information
           </span>
         </h2>
-          <p className="text-xl text-gray-600 max-w-3xl mx-auto">
+          <p className="text-base md:text-lg lg:text-xl text-gray-600 max-w-3xl mx-auto px-4">
             Booking a trip is no longer difficult! With TravelGenz, enjoy a
             seamless and hassle-free visa process.
           
@@ -128,16 +128,16 @@ const Visa: React.FC = () => {
           
         </p>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-10 max-w-7xl mx-auto">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 md:gap-8 lg:gap-10 max-w-7xl mx-auto">
           {steps.map(({ icon, title, description }, idx) => (
             <div
               key={idx}
-              className="bg-white p-6 rounded-xl shadow-lg flex flex-col items-center text-center cursor-pointer transition-colors duration-300 hover:bg-pink-50"
+              className="bg-white p-4 md:p-6 rounded-xl shadow-lg flex flex-col items-center text-center cursor-pointer transition-colors duration-300 hover:bg-pink-50"
               onClick={handleCardClick}
             >
-              <div className="mb-4">{icon}</div>
-              <h3 className="text-xl font-semibold mb-2">{title}</h3>
-              <p className="text-gray-600">{description}</p>
+              <div className="mb-3 md:mb-4">{icon}</div>
+              <h3 className="text-lg md:text-xl font-semibold mb-2">{title}</h3>
+              <p className="text-gray-600 text-sm md:text-base">{description}</p>
             </div>
           ))}
         </div>
@@ -146,9 +146,9 @@ const Visa: React.FC = () => {
       {showForm && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
           <div
-            className={`bg-white rounded-lg p-8 shadow-xl flex gap-8 max-w-[600px] md:max-w-[900px] w-full transition-all duration-500 ease-in-out relative`}
+            className={`bg-white rounded-lg p-4 md:p-6 lg:p-8 shadow-xl flex flex-col lg:flex-row gap-4 md:gap-6 lg:gap-8 max-w-[95vw] md:max-w-[600px] lg:max-w-[900px] w-full transition-all duration-500 ease-in-out relative max-h-[90vh] overflow-y-auto`}
             style={{
-              width: isAnyFilterSelected ? "900px" : "600px",
+              width: isAnyFilterSelected && window.innerWidth >= 1024 ? "900px" : "auto",
             }}
           >
             <button
@@ -159,20 +159,20 @@ const Visa: React.FC = () => {
               <X className="w-6 h-6" />
             </button>
 
-            <form className="flex-1 space-y-6">
-              <h3 className="text-2xl font-bold mb-6 text-center bg-gradient-to-r from-[#f857a6] to-[#a75fff] bg-clip-text text-transparent">
+            <form className="flex-1 space-y-4 md:space-y-6">
+              <h3 className="text-xl md:text-2xl font-bold mb-4 md:mb-6 text-center bg-gradient-to-r from-[#f857a6] to-[#a75fff] bg-clip-text text-transparent">
                 Visa Application Form
               </h3>
 
-              <div className="flex flex-wrap gap-4">
-                <div className="flex flex-col flex-grow min-w-[140px]">
-                  <label className="block text-sm font-medium text-gray-700">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-3 md:gap-4">
+                <div className="flex flex-col">
+                  <label className="block text-xs md:text-sm font-medium text-gray-700 mb-1">
                     Country of Origin
                   </label>
                   <select
                     value={origin}
                     onChange={(e) => setOrigin(e.target.value)}
-                    className="mt-1 block w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-pink-400"
+                    className="block w-full border border-gray-300 rounded-md px-2.5 md:px-3 py-2 focus:outline-none focus:ring-2 focus:ring-pink-400 text-sm md:text-base"
                   >
                     <option value="">Select Country</option>
                     {countries.map((country) => (
@@ -183,14 +183,14 @@ const Visa: React.FC = () => {
                   </select>
                 </div>
 
-                <div className="flex flex-col flex-grow min-w-[140px]">
-                  <label className="block text-sm font-medium text-gray-700">
+                <div className="flex flex-col">
+                  <label className="block text-xs md:text-sm font-medium text-gray-700 mb-1">
                     Destination Country
                   </label>
                   <select
                     value={destination}
                     onChange={(e) => setDestination(e.target.value)}
-                    className="mt-1 block w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-pink-400"
+                    className="block w-full border border-gray-300 rounded-md px-2.5 md:px-3 py-2 focus:outline-none focus:ring-2 focus:ring-pink-400 text-sm md:text-base"
                   >
                     <option value="">Select Country</option>
                     {countries.map((country) => (
@@ -201,14 +201,14 @@ const Visa: React.FC = () => {
                   </select>
                 </div>
 
-                <div className="flex flex-col flex-grow min-w-[140px]">
-                  <label className="block text-sm font-medium text-gray-700">
+                <div className="flex flex-col">
+                  <label className="block text-xs md:text-sm font-medium text-gray-700 mb-1">
                     Duration
                   </label>
                   <select
                     value={duration}
                     onChange={(e) => setDuration(e.target.value)}
-                    className="mt-1 block w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-pink-400"
+                    className="block w-full border border-gray-300 rounded-md px-2.5 md:px-3 py-2 focus:outline-none focus:ring-2 focus:ring-pink-400 text-sm md:text-base"
                     disabled={!destination}
                   >
                     {durations.map((d) => (
@@ -219,14 +219,14 @@ const Visa: React.FC = () => {
                   </select>
                 </div>
 
-                <div className="flex flex-col flex-grow min-w-[140px]">
-                  <label className="block text-sm font-medium text-gray-700">
+                <div className="flex flex-col">
+                  <label className="block text-xs md:text-sm font-medium text-gray-700 mb-1">
                     Visit Type
                   </label>
                   <select
                     value={visitType}
                     onChange={(e) => setVisitType(e.target.value)}
-                    className="mt-1 block w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-pink-400"
+                    className="block w-full border border-gray-300 rounded-md px-2.5 md:px-3 py-2 focus:outline-none focus:ring-2 focus:ring-pink-400 text-sm md:text-base"
                   >
                     <option>Single Visit</option>
                     <option>Multi Visit</option>
@@ -235,21 +235,21 @@ const Visa: React.FC = () => {
               </div>
 
               <div className="flex items-center space-x-4">
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label className="block text-xs md:text-sm font-medium text-gray-700">
                   Members
                 </label>
                 <button
                   type="button"
                   onClick={decreaseMembers}
-                  className="px-3 py-1 rounded-md bg-gray-200 hover:bg-gray-300 text-lg"
+                  className="px-2.5 md:px-3 py-1 rounded-md bg-gray-200 hover:bg-gray-300 text-base md:text-lg"
                 >
                   −
                 </button>
-                <span className="w-10 text-center">{members}</span>
+                <span className="w-8 md:w-10 text-center text-sm md:text-base">{members}</span>
                 <button
                   type="button"
                   onClick={increaseMembers}
-                  className="px-3 py-1 rounded-md bg-gray-200 hover:bg-gray-300 text-lg"
+                  className="px-2.5 md:px-3 py-1 rounded-md bg-gray-200 hover:bg-gray-300 text-base md:text-lg"
                 >
                   ＋
                 </button>
@@ -257,7 +257,7 @@ const Visa: React.FC = () => {
 
               <button
                 type="submit"
-                className="w-full mt-4 bg-gradient-to-r from-[#f857a6] to-[#a75fff] hover:opacity-90 text-white py-2 px-4 rounded-md shadow-md transition-all duration-300"
+                className="w-full mt-3 md:mt-4 bg-gradient-to-r from-[#f857a6] to-[#a75fff] hover:opacity-90 text-white py-2.5 md:py-3 px-4 rounded-md shadow-md transition-all duration-300 text-sm md:text-base"
               >
                 Submit Application
               </button>
@@ -265,13 +265,13 @@ const Visa: React.FC = () => {
 
             {/* Summary */}
             {isAnyFilterSelected && (
-              <div className="flex-1 border-l border-gray-200 pl-8">
-                <h4 className="text-2xl font-bold mb-6 text-center bg-gradient-to-r from-[#f857a6] to-[#a75fff] bg-clip-text text-transparent">
+              <div className="flex-1 lg:border-l border-gray-200 lg:pl-6 xl:pl-8 mt-4 lg:mt-0 pt-4 lg:pt-0 border-t lg:border-t-0">
+                <h4 className="text-xl md:text-2xl font-bold mb-4 md:mb-6 text-center bg-gradient-to-r from-[#f857a6] to-[#a75fff] bg-clip-text text-transparent">
                   Summary
                 </h4>
-                <div className="space-y-8 text-left text-gray-800">
+                <div className="space-y-4 md:space-y-6 lg:space-y-8 text-left text-gray-800">
                   {origin && (
-                    <div>
+                    <div className="text-sm md:text-base">
                       <span className="font-medium bg-gradient-to-r from-[#f857a6] to-[#a75fff] bg-clip-text text-transparent">
                         Origin:
                       </span>{" "}
@@ -279,7 +279,7 @@ const Visa: React.FC = () => {
                     </div>
                   )}
                   {destination && (
-                    <div>
+                    <div className="text-sm md:text-base">
                       <span className="font-medium bg-gradient-to-r from-[#f857a6] to-[#a75fff] bg-clip-text text-transparent">
                         Destination:
                       </span>{" "}
@@ -290,25 +290,25 @@ const Visa: React.FC = () => {
                   {/* Show Duration and Visa Cost only if destination is selected */}
                   {destination && (
                     <>
-                      <div>
+                      <div className="text-sm md:text-base">
                         <span className="font-medium bg-gradient-to-r from-[#f857a6] to-[#a75fff] bg-clip-text text-transparent">
                           Duration:
                         </span>{" "}
                         <span>{duration}</span>
                       </div>
-                      <div>
+                      <div className="text-sm md:text-base">
                         <span className="font-medium bg-gradient-to-r from-[#f857a6] to-[#a75fff] bg-clip-text text-transparent">
                           Visa Cost per Member:
                         </span>{" "}
                         <span>₹{visaCost.toLocaleString()}</span>
                       </div>
-                      <div>
+                      <div className="text-sm md:text-base">
                         <span className="font-medium bg-gradient-to-r from-[#f857a6] to-[#a75fff] bg-clip-text text-transparent">
                           Members:
                         </span>{" "}
                         <span>{members}</span>
                       </div>
-                      <div>
+                      <div className="text-sm md:text-base">
                         <span className="font-medium bg-gradient-to-r from-[#f857a6] to-[#a75fff] bg-clip-text text-transparent">
                           Total Cost:
                         </span>{" "}
@@ -318,7 +318,7 @@ const Visa: React.FC = () => {
                   )}
                  
                   {destination && visitType &&  (
-                    <div>
+                    <div className="text-sm md:text-base">
                       <span className="font-medium bg-gradient-to-r from-[#f857a6] to-[#a75fff] bg-clip-text text-transparent">
                         Visit Type:
                       </span>{" "}

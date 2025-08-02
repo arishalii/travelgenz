@@ -332,7 +332,7 @@ const Packages = () => {
         </div>
 
         <div className="max-w-7xl mx-auto px-4 py-4 md:py-8">
-          <div className="lg:hidden mb-4">
+          <div className="lg:hidden mb-4 px-2">
             <Sheet open={showMobileFilters} onOpenChange={setShowMobileFilters}>
               <SheetTrigger asChild>
                 <Button variant="outline" className="w-full">
@@ -340,7 +340,7 @@ const Packages = () => {
                   Filters & Search
                 </Button>
               </SheetTrigger>
-              <SheetContent side="left" className="w-80">
+              <SheetContent side="left" className="w-[85vw] max-w-sm">
                 <SheetHeader>
                   <SheetTitle>Filters</SheetTitle>
                   <SheetDescription>
@@ -354,22 +354,22 @@ const Packages = () => {
             </Sheet>
           </div>
 
-          <div className="flex gap-6 md:gap-8">
+          <div className="flex gap-4 md:gap-6 lg:gap-8">
             <div className="hidden lg:block w-1/4 max-h-[804px] bg-white rounded-xl shadow-lg p-4 border border-gray-100 hover:shadow-xl transition-shadow duration-300 overflow-y-auto">
               <FilterContent inputRef={inputRef} onFocus={handleInputFocus} />
             </div>
 
-            <div className="w-full lg:w-3/4">
+            <div className="w-full lg:w-3/4 px-2 lg:px-0">
               <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-6 gap-4">
-                <h1 className="text-xl md:text-2xl font-bold">
+                <h1 className="text-lg md:text-xl lg:text-2xl font-bold">
                   {searchInput ? `Packages for "${searchInput}"` : 'All Packages'} ({sortedPackages.length} packages found)
                 </h1>
-                <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
+                <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 md:gap-3">
                   <Select value={sortBy} onValueChange={(value) => {
                     setSortBy(value);
                     setCurrentPage(1);
                   }}>
-                    <SelectTrigger className="w-full sm:w-40">
+                    <SelectTrigger className="w-full sm:w-36 md:w-40 text-sm">
                       <SelectValue placeholder="Sort by" />
                     </SelectTrigger>
                     <SelectContent>
@@ -388,7 +388,7 @@ const Packages = () => {
                         setCurrentPage(1);
                       }}
                     />
-                    <label htmlFor="with-flights-top" className="text-sm">
+                    <label htmlFor="with-flights-top" className="text-xs md:text-sm">
                       With Flights
                     </label>
                   </div>
@@ -421,72 +421,72 @@ const attractionsCount = packageDetails[pkg.id]?.attractions?.length || 0;
                       return (
                         <div 
                           key={pkg.id} 
-                          className="flex flex-col md:flex-row gap-4 bg-white rounded-lg shadow-sm border overflow-hidden hover:shadow-md transition-shadow cursor-pointer"
+                          className="flex flex-col md:flex-row gap-3 md:gap-4 bg-white rounded-lg shadow-sm border overflow-hidden hover:shadow-md transition-shadow cursor-pointer"
                           onClick={() => handlePackageClick(pkg.id)}
                         >
                           <div className="w-full md:w-1/3 relative">
                             <img 
                               src={pkg.image} 
                               alt={pkg.title}
-                              className="w-full h-48 md:h-full object-cover"
+                              className="w-full h-40 md:h-full object-cover"
                             />
-                            <div className="absolute top-2 left-2 bg-blue-600 text-white px-2 py-1 rounded text-xs font-bold">
+                            <div className="absolute top-2 left-2 bg-blue-600 text-white px-1.5 md:px-2 py-0.5 md:py-1 rounded text-xs font-bold">
                               {pkg.duration}
                             </div>
                             {pkg.deal_type !== 'Regular' && (
-                              <div className="absolute top-2 right-2 bg-green-600 text-white px-2 py-1 rounded text-xs font-bold">
+                              <div className="absolute top-2 right-2 bg-green-600 text-white px-1.5 md:px-2 py-0.5 md:py-1 rounded text-xs font-bold">
                                 {pkg.deal_type}
                               </div>
                             )}
                           </div>
                           
-                          <div className="w-full md:w-2/3 p-4 flex flex-col justify-between">
+                          <div className="w-full md:w-2/3 p-3 md:p-4 flex flex-col justify-between">
                             <div>
                               <div className="flex justify-between items-start mb-2">
-                                <h3 className="font-semibold text-lg md:text-xl pr-2">{pkg.title}</h3>
+                                <h3 className="font-semibold text-base md:text-lg lg:text-xl pr-2 line-clamp-2">{pkg.title}</h3>
                                 <div className="flex items-center text-yellow-500 flex-shrink-0">
                                   <span className="text-sm">★</span>
                                   <span className="text-sm ml-1">{pkg.rating}</span>
                                 </div>
                               </div>
                               
-                              <p className="text-gray-600 mb-3">{pkg.country}</p>
+                              <p className="text-gray-600 mb-2 md:mb-3 text-sm md:text-base">{pkg.country}</p>
                               
-                              <div className="grid grid-cols-2 gap-2 mb-4">
-                              <div className="flex items-center text-sm text-gray-600">
+                              <div className="grid grid-cols-1 sm:grid-cols-2 gap-1 md:gap-2 mb-3 md:mb-4">
+                              <div className="flex items-center text-xs md:text-sm text-gray-600">
                                 <span className="mr-1">✈️</span>
-                                <span>{pkg.destinations?.join(', ') || 'Multiple destinations'}</span>
+                                <span className="truncate">{pkg.destinations?.join(', ') || 'Multiple destinations'}</span>
                               </div>
-                              <div className="flex items-center text-sm text-gray-600">
+                              <div className="flex items-center text-xs md:text-sm text-gray-600">
                                 <span className="mr-1">🏨</span>
                                 <span>{pkg.hotel_category}</span>
                               </div>
-                              <div className="flex items-center text-sm text-gray-600">
+                              <div className="flex items-center text-xs md:text-sm text-gray-600">
                                 <span className="mr-1">🎭</span>
                                 <span>Activities: {activitiesCount}</span>
                               </div>
-                              <div className="flex items-center text-sm text-gray-600">
+                              <div className="flex items-center text-xs md:text-sm text-gray-600">
                                 <span className="mr-1">🏛️</span>
                                 <span>Attractions: {attractionsCount}</span>
                               </div>
-                              <div className="flex items-center text-sm text-gray-600">
+                              <div className="flex items-center text-xs md:text-sm text-gray-600 sm:col-span-2">
                                 <span className="mr-1">🍽️</span>
                                 <span>{pkg.meals_included}</span>
                               </div>
                             </div>
                             </div>
                             
-                            <div className="flex justify-between items-end">
-                              <div className="text-sm text-gray-500">
+                            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-end gap-2">
+                              <div className="text-xs md:text-sm text-gray-500">
                                 <span>{pkg.trip_type}</span>
                               </div>
                               <div className="text-right">
                                 {pkg.original_price && (
-                                  <span className="text-sm text-red-500 line-through block">
+                                  <span className="text-xs md:text-sm text-red-500 line-through block">
                                     ₹{formatPrice(pkg.original_price)}
                                   </span>
                                 )}
-                                <div className="text-xl font-bold text-green-600">
+                                <div className="text-lg md:text-xl font-bold text-green-600">
                                   ₹{formatPrice(pkg.price)}
                                   <span className="text-xs font-normal text-gray-500 block">per person</span>
                                 </div>
@@ -559,7 +559,7 @@ const attractionsCount = packageDetails[pkg.id]?.attractions?.length || 0;
               )}
 
               {!loading && sortedPackages.length === 0 && (
-                <div className="text-center py-12">
+                <div className="text-center py-8 md:py-12">
                   <h3 className="text-lg font-medium text-gray-900 mb-2">No packages found</h3>
                   <p className="text-gray-600">Try adjusting your filters to see more results.</p>
                 </div>

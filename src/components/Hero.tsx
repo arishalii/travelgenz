@@ -73,49 +73,49 @@ const Hero = () => {
   };
 
   return (
-    <section className="relative min-h-screen flex flex-col items-center justify-center overflow-hidden" style={{
+    <section className="relative min-h-screen flex flex-col items-center justify-center overflow-hidden px-4" style={{
       backgroundImage: `url('https://images.pexels.com/photos/3155666/pexels-photo-3155666.jpeg')`,
       backgroundSize: 'cover',
       backgroundPosition: 'center',
     }}>
       <div className="absolute inset-0 bg-black/40"></div>
 
-      <div className="relative z-10 max-w-7xl mx-auto px-4 text-center text-white flex-grow flex flex-col justify-center">
-        <div className="mb-16 px-[10px] pt-[126px] pb-0">
+      <div className="relative z-10 max-w-7xl mx-auto text-center text-white flex-grow flex flex-col justify-center w-full">
+        <div className="mb-8 md:mb-16 px-2 md:px-[10px] pt-[80px] md:pt-[126px] pb-0">
           <h1 className="text-5xl md:text-7xl font-bold mb-6 leading-tight">
             Travel <span className="text-purple-400">Luxuriously</span>,
             <br />
             Pay <span className="text-pink-400">Less</span> ✈️
           </h1>
-          <p className="text-xl md:text-2xl mb-8 text-white max-w-4xl mx-auto leading-relaxed">
+          <p className="text-lg md:text-xl lg:text-2xl mb-6 md:mb-8 text-white max-w-4xl mx-auto leading-relaxed px-4">
             Handcrafted trips that cost 10-20% less than major booking sites.
             <br />
             No bots, just genuine human travel expertise.
           </p>
 
-          <div className="max-w-6xl mx-auto mb-8">
-            <div className="bg-white/95 backdrop-blur-sm rounded-2xl p-3 flex flex-col lg:flex-row gap-3 shadow-2xl">
+          <div className="max-w-6xl mx-auto mb-6 md:mb-8 px-2">
+            <div className="bg-white/95 backdrop-blur-sm rounded-2xl p-3 md:p-4 flex flex-col lg:flex-row gap-3 shadow-2xl">
               <div className="flex-1 relative">
                 <input 
                   type="text" 
                   placeholder="Where to? (e.g., Bali, Tokyo)" 
                   value={searchLocation} 
                   onChange={e => setSearchLocation(e.target.value)} 
-                  className="w-full px-6 py-4 rounded-xl border-0 outline-none text-gray-800 placeholder-gray-500 text-lg" 
+                  className="w-full px-4 md:px-6 py-3 md:py-4 rounded-xl border-0 outline-none text-gray-800 placeholder-gray-500 text-base md:text-lg" 
                 />
               </div>
               
-              <div className="relative" style={{ marginTop: '11px' }}>
+              <div className="relative md:mt-[11px]">
                 <Popover>
                   <PopoverTrigger asChild>
                     <Button
                       variant="outline"
                       className={cn(
-                        "w-full lg:w-56 px-6 py-4 rounded-xl border-0 bg-transparent text-gray-800 placeholder-gray-500 text-lg justify-start text-left font-normal",
+                        "w-full lg:w-56 px-4 md:px-6 py-3 md:py-4 rounded-xl border-0 bg-transparent text-gray-800 placeholder-gray-500 text-base md:text-lg justify-start text-left font-normal",
                         !searchDate && "text-gray-500"
                       )}
                     >
-                      <Calendar className="mr-2 h-5 w-5" />
+                      <Calendar className="mr-2 h-4 w-4 md:h-5 md:w-5" />
                       {searchDate ? format(searchDate, "dd MMM yyyy") : "Departure Date"}
                     </Button>
                   </PopoverTrigger>
@@ -131,11 +131,11 @@ const Hero = () => {
                 </Popover>
               </div>
 
-              <div className="relative mt-[11px]">
+              <div className="relative md:mt-[11px]">
                 <Popover open={showGuestPopover} onOpenChange={setShowGuestPopover}>
                   <PopoverTrigger asChild>
-                    <Button variant="outline" className="w-full lg:w-48 px-6 py-4 rounded-xl border-0 bg-transparent text-gray-800 text-lg justify-start text-left font-normal">
-                      <Users className="mr-2 h-5 w-5" />
+                    <Button variant="outline" className="w-full lg:w-48 px-4 md:px-6 py-3 md:py-4 rounded-xl border-0 bg-transparent text-gray-800 text-base md:text-lg justify-start text-left font-normal">
+                      <Users className="mr-2 h-4 w-4 md:h-5 md:w-5" />
                       {rooms} Room{rooms > 1 ? 's' : ''}, {guests} Guest{guests > 1 ? 's' : ''}
                     </Button>
                   </PopoverTrigger>
@@ -170,26 +170,26 @@ const Hero = () => {
                 </Popover>
               </div>
 
-              <div className="flex items-center gap-2 px-4">
-                <label className="flex items-center gap-2 text-gray-700 cursor-pointer">
+              <div className="flex items-center gap-2 px-2 md:px-4">
+                <label className="flex items-center gap-2 text-gray-700 cursor-pointer text-sm md:text-base">
                   <input type="checkbox" checked={withFlights} onChange={e => setWithFlights(e.target.checked)} className="rounded border-gray-300" />
-                  <span className="text-sm">With Flights</span>
+                  <span className="text-xs md:text-sm">With Flights</span>
                 </label>
               </div>
 
-              <button onClick={handleExplore} className="bg-gradient-to-r from-pink-500 to-purple-600 text-white px-8 py-4 rounded-xl font-semibold text-lg hover:from-pink-600 hover:to-purple-700 transition-all duration-300 transform hover:scale-105 shadow-lg">
+              <button onClick={handleExplore} className="bg-gradient-to-r from-pink-500 to-purple-600 text-white px-4 md:px-8 py-3 md:py-4 rounded-xl font-semibold text-base md:text-lg hover:from-pink-600 hover:to-purple-700 transition-all duration-300 transform hover:scale-105 shadow-lg">
                 🔍 Explore
               </button>
             </div>
           </div>
 
           {destinations.length > 0 && (
-            <div className="flex flex-wrap justify-center gap-3 mb-8">
+            <div className="flex flex-wrap justify-center gap-2 md:gap-3 mb-6 md:mb-8 px-2">
               {destinations.map(destination => (
                 <button 
                   key={destination.id} 
                   onClick={() => handleDestinationClick(destination.name)} 
-                  className="bg-white/20 backdrop-blur-sm text-white px-4 py-2 rounded-full hover:bg-white/30 transition-all duration-300 font-medium flex items-center gap-2 border border-white/30"
+                  className="bg-white/20 backdrop-blur-sm text-white px-3 md:px-4 py-1.5 md:py-2 rounded-full hover:bg-white/30 transition-all duration-300 font-medium flex items-center gap-1 md:gap-2 border border-white/30 text-sm md:text-base"
                 >
                   <span>{destination.emoji}</span>
                   <span>{destination.name}</span>
@@ -201,7 +201,7 @@ const Hero = () => {
       </div>
 
       {/* Animated Mouse Scroll Indicator */}
-      <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 z-10">
+      <div className="absolute bottom-4 md:bottom-8 left-1/2 transform -translate-x-1/2 z-10">
         <motion.div
           className="flex flex-col items-center"
           animate={{
@@ -213,9 +213,9 @@ const Hero = () => {
             ease: "easeInOut"
           }}
         >
-          <div className="relative w-8 h-12 rounded-2xl border-2 border-white flex justify-center p-1">
+          <div className="relative w-6 h-10 md:w-8 md:h-12 rounded-2xl border-2 border-white flex justify-center p-1">
             <motion.div
-              className="w-1 h-2 bg-white rounded-full"
+              className="w-0.5 h-1.5 md:w-1 md:h-2 bg-white rounded-full"
               animate={{
                 y: [0, 12, 0],
                 opacity: [1, 0.5, 1]
@@ -228,7 +228,7 @@ const Hero = () => {
             />
           </div>
           <motion.span 
-            className="text-white text-xs mt-2"
+            className="text-white text-xs mt-1 md:mt-2 hidden md:block"
             animate={{
               opacity: [0.6, 1, 0.6]
             }}

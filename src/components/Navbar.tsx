@@ -116,14 +116,14 @@ const Navbar = () => {
     <>
       <nav className={getNavbarClasses()}>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between h-14 md:h-16">
+          <div className="flex items-center justify-between h-16 md:h-16">
             <div className="flex items-center">
               <Link to="/" className={getLogoClasses()}>
                 TravelGenZ
               </Link>
             </div>
             
-            <div className="hidden md:flex items-center space-x-6 lg:space-x-8">
+            <div className="hidden lg:flex items-center space-x-6 lg:space-x-8">
               <button onClick={() => handleNavigation('/')} className={getLinkClasses()}>
                 Home
               </button>
@@ -187,7 +187,7 @@ const Navbar = () => {
               )}
             </div>
 
-            <div className="-mr-2 flex md:hidden">
+            <div className="-mr-2 flex lg:hidden">
               <button
                 onClick={toggleMenu}
                 type="button"
@@ -206,16 +206,10 @@ const Navbar = () => {
           </div>
         </div>
 
-        <div className={`md:hidden ${isMenuOpen ? 'block' : 'hidden'}`} id="mobile-menu">
+        <div className={`lg:hidden ${isMenuOpen ? 'block' : 'hidden'}`} id="mobile-menu">
           <div className="px-2 pt-2 pb-3 space-y-1 sm:px-3 bg-white shadow-lg">
             <button onClick={() => handleNavigation('/')} className="nav-link block bg-gray-100 text-gray-700 hover:bg-gray-200 px-3 py-2 rounded-md text-base font-medium">
               Home
-            </button>
-            <button onClick={() => handleNavigation('/flights')} className="nav-link block text-gray-700 hover:bg-gray-50 px-3 py-2 rounded-md text-base font-medium">
-              Flights
-            </button>
-            <button onClick={() => handleNavigation('/hotels')} className="nav-link block text-gray-700 hover:bg-gray-50 px-3 py-2 rounded-md text-base font-medium">
-              Hotels
             </button>
             <button onClick={() => handleNavigation('/packages')} className="nav-link block text-gray-700 hover:bg-gray-50 px-3 py-2 rounded-md text-base font-medium">
               Packages

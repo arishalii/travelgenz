@@ -33,28 +33,28 @@ const Benefits = () => {
   return <section className="bg-white mx-0 my-0 px-[16px] pt-[26px] pb-[36px]">
 
 
-      <div className="max-w-7xl mx-auto">
+      <div className="max-w-7xl mx-auto px-4">
         <div className="text-center mb-12">
-          <h2 className="text-4xl font-bold mb-4">
+          <h2 className="text-2xl md:text-3xl lg:text-4xl font-bold mb-4">
             Why Choose{" "}
             <span className="bg-gradient-to-r from-[#f857a6] to-[#a75fff] bg-clip-text text-transparent">
               TravelGenZ?
             </span>
           </h2>
-          <p className="text-xl text-gray-600 max-w-3xl mx-auto">
+          <p className="text-lg md:text-xl text-gray-600 max-w-3xl mx-auto px-4">
             We're reimagining travel for the next generation. Here's how we're different.
           </p>
         </div>
         
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 md:gap-8">
           {benefits.map((benefit, index) => <div key={index} className="bg-gray-50 rounded-xl p-6 text-center hover:shadow-md transition-all">
               <div className="flex justify-center mb-6">
-                <div className="p-4 bg-white rounded-full shadow-sm">
+                <div className="p-3 md:p-4 bg-white rounded-full shadow-sm">
                   {benefit.icon}
                 </div>
               </div>
-              <h3 className="text-xl font-bold mb-3">{benefit.title}</h3>
-              <p className="text-gray-600">{benefit.description}</p>
+              <h3 className="text-lg md:text-xl font-bold mb-3">{benefit.title}</h3>
+              <p className="text-sm md:text-base text-gray-600">{benefit.description}</p>
             </div>)}
         </div>
       </div>
