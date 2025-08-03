@@ -921,7 +921,7 @@ const PackageDetail = () => {
     <div className="min-h-screen bg-gray-50">
       <Navbar />
       
-      <main className="pt-16 md:pt-20">
+      <main className="pt-16 md:pt-16">
         <div className="lg:hidden bg-white border-b px-4 py-3">
           <div className="flex items-center justify-between">
             <Button
@@ -932,25 +932,21 @@ const PackageDetail = () => {
             >
               <ArrowLeft className="h-4 w-4" />
             </Button>
-            <div className="flex items-center gap-2">
-              <Button variant="ghost" size="sm" className="p-2">
-                <Share2 className="h-4 w-4" />
-              </Button>
-              <Button variant="ghost" size="sm" className="p-2">
-                <Heart className="h-4 w-4" />
-              </Button>
-            </div>
+            
           </div>
         </div>
 
         <div className="relative">
-          <div className="h-48 md:h-64 lg:h-96 relative overflow-hidden">
+          <div className="h-[16rem] md:!h-[36rem] lg:h-96 relative overflow-hidden">
+
+
+
             <img 
               src={packageDetails?.hero_image || packageData.image}
               alt={packageData.title}
               className="w-full h-full object-cover"
             />
-            <div className="absolute inset-0 bg-black bg-opacity-30"></div>
+            <div className="absolute inset-0 bg-black bg-opacity-10"></div>
             
             <div className="hidden lg:block absolute top-4 left-4">
               <Button
@@ -964,14 +960,7 @@ const PackageDetail = () => {
             </div>
 
             <div className="hidden lg:block absolute top-4 right-4">
-              <div className="flex gap-2">
-                <Button variant="secondary" size="sm" className="bg-white/90 hover:bg-white">
-                  <Share2 className="h-4 w-4" />
-                </Button>
-                <Button variant="secondary" size="sm" className="bg-white/90 hover:bg-white">
-                  <Heart className="h-4 w-4" />
-                </Button>
-              </div>
+             
             </div>
 
             {images.length > 1 && (
