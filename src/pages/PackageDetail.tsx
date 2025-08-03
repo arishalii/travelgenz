@@ -21,16 +21,7 @@ import {
   ChevronRight,
   Plus,
   Minus,
-  ShoppingCart,
-  Download,
-  ClipboardCheck,
-  Train,
-  Bus,
-  Ship,
-  Coffee,
-  Utensils,
-  Mountain,
-  Trophy
+  ShoppingCart
 } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
@@ -44,7 +35,6 @@ import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover
 import { format } from 'date-fns';
 import { cn } from '@/lib/utils';
 import BookingPopup from '../components/BookingPopup';
-import jsPDF from 'jspdf';
 
 interface Package {
   id: string;
@@ -72,10 +62,6 @@ interface Package {
   price_increase_warning?: string;
   per_person_price?: number;
   total_original_price?: number;
-  activity_details?: {
-    count: number;
-    list: string[];
-  };
 }
 
 interface PackageDetails {
@@ -121,44 +107,6 @@ interface PackageDetails {
   };
 }
 
-interface BlogPost {
-  id: string;
-  title: string;
-  excerpt: string;
-  image: string;
-  author: string;
-  author_image?: string;
-  created_at: string;
-  date_written?: string;
-  categories?: string[];
-  category?: string;
-}
-
-const countries = [
-  "Afghanistan", "Albania", "Algeria", "Andorra", "Angola", "Argentina", "Armenia", "Australia", "Austria", "Azerbaijan",
-  "Bahamas", "Bahrain", "Bangladesh", "Barbados", "Belarus", "Belgium", "Belize", "Benin", "Bhutan", "Bolivia",
-  "Bosnia and Herzegovina", "Botswana", "Brazil", "Brunei", "Bulgaria", "Burkina Faso", "Burundi", "Cambodia", "Cameroon",
-  "Canada", "Cape Verde", "Central African Republic", "Chad", "Chile", "China", "Colombia", "Comoros", "Costa Rica",
-  "Croatia", "Cuba", "Cyprus", "Czech Republic", "Denmark", "Djibouti", "Dominica", "Dominican Republic", "Ecuador",
-  "Egypt", "El Salvador", "Equatorial Guinea", "Eritrea", "Estonia", "Eswatini", "Ethiopia", "Fiji", "Finland", "France",
-  "Gabon", "Gambia", "Georgia", "Germany", "Ghana", "Greece", "Grenada", "Guatemala", "Guinea", "Guyana", "Haiti",
-  "Honduras", "Hungary", "Iceland", "India", "Indonesia", "Iran", "Iraq", "Ireland", "Israel", "Italy", "Jamaica", "Japan",
-  "Jordan", "Kazakhstan", "Kenya", "Kiribati", "Kuwait", "Kyrgyzstan", "Laos", "Latvia", "Lebanon", "Lesotho", "Liberia",
-  "Libya", "Liechtenstein", "Lithuania", "Luxembourg", "Madagascar", "Malawi", "Malaysia", "Maldives", "Mali", "Malta",
-  "Mauritania", "Mauritius", "Mexico", "Micronesia", "Moldova", "Monaco", "Mongolia", "Montenegro", "Morocco", "Mozambique",
-  "Myanmar", "Namibia", "Nauru", "Nepal", "Netherlands", "New Zealand", "Nicaragua", "Niger", "Nigeria", "North Korea",
-  "North Macedonia", "Norway", "Oman", "Pakistan", "Palau", "Panama", "Papua New Guinea", "Paraguay", "Peru", "Philippines",
-  "Poland", "Portugal", "Qatar", "Romania", "Russia", "Rwanda", "Saint Kitts and Nevis", "Saint Lucia",
-  "Saint Vincent and the Grenadines", "Samoa", "San Marino", "Saudi Arabia", "Senegal", "Serbia", "Seychelles",
-  "Sierra Leone", "Singapore", "Slovakia", "Slovenia", "Solomon Islands", "Somalia", "South Africa", "South Korea",
-  "South Sudan", "Spain", "Sri Lanka", "Sudan", "Suriname", "Sweden", "Switzerland", "Syria", "Taiwan", "Tajikistan",
-  "Tanzania", "Thailand", "Timor-Leste", "Togo", "Tonga", "Trinidad and Tobago", "Tunisia", "Turkey", "Turkmenistan",
-  "Tuvalu", "Uganda", "Ukraine", "United Arab Emirates", "United Kingdom", "United States", "Uruguay", "Uzbekistan",
-  "Vanuatu", "Vatican City", "Venezuela", "Vietnam", "Yemen", "Zambia", "Zimbabwe"
-];
-
-const visaDurations = ["15 Days", "30 Days"];
-
 const PackageDetail = () => {
   const { id } = useParams();
   const navigate = useNavigate();
@@ -173,19 +121,14 @@ const PackageDetail = () => {
   const [selectedDate, setSelectedDate] = useState<Date>();
   const [members, setMembers] = useState(1);
   const [withFlights, setWithFlights] = useState(true);
+  const [withVisa, setWithVisa] = useState(false);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [showGallery, setShowGallery] = useState(false);
   const [isBookingPopupOpen, setIsBookingPopupOpen] = useState(false);
-  const [relatedBlogs, setRelatedBlogs] = useState<BlogPost[]>([]);
-  const [blogsLoading, setBlogsLoading] = useState(false);
-  const [visaRates, setVisaRates] = useState<Record<string, Record<string, number>>>({});
-  const [visaOrigin, setVisaOrigin] = useState('');
-  const [visaDestination, setVisaDestination] = useState('');
-  const [visaDuration, setVisaDuration] = useState('15 Days');
-  const [visaMembers, setVisaMembers] = useState(1);
-  const [addedVisaCost, setAddedVisaCost] = useState(0);
+  const [visaCost, setVisaCost] = useState(0);
   const [isMobile, setIsMobile] = useState(false);
 
+  // Check if mobile
   useEffect(() => {
     const checkMobile = () => {
       setIsMobile(window.innerWidth < 768);
@@ -199,36 +142,19 @@ const PackageDetail = () => {
   useEffect(() => {
     if (id) {
       fetchPackageData();
-      loadVisaRates();
     }
   }, [id]);
 
   useEffect(() => {
+    // Get cart item ID from URL params if present
     const urlParams = new URLSearchParams(location.search);
     const cartItemId = urlParams.get('cart_item_id');
     
     if (cartItemId && packageData) {
+      // Load cart item details if coming from cart
       loadCartItemDetails(cartItemId);
     }
   }, [location.search, packageData]);
-
-  const loadVisaRates = async () => {
-    const { data, error } = await supabase
-      .from('visa_rates')
-      .select('*');
-    
-    if (data && !error) {
-      const ratesMap: Record<string, Record<string, number>> = {};
-      data.forEach((rate) => {
-        if (!ratesMap[rate.destination_country]) {
-          ratesMap[rate.destination_country] = {};
-        }
-        ratesMap[rate.destination_country]["15 Days"] = rate.price_15_days;
-        ratesMap[rate.destination_country]["30 Days"] = rate.price_30_days;
-      });
-      setVisaRates(ratesMap);
-    }
-  };
 
   const loadCartItemDetails = async (cartItemId: string) => {
     try {
@@ -244,6 +170,8 @@ const PackageDetail = () => {
         setSelectedDuration(data.days.toString());
         setMembers(data.members || 1);
         setWithFlights(data.with_flights || false);
+        setWithVisa(data.with_visa || false);
+        setVisaCost(data.visa_cost || 0);
         if (data.selected_date) {
           setSelectedDate(new Date(data.selected_date));
         }
@@ -274,25 +202,9 @@ const PackageDetail = () => {
       }
 
       setPackageData(packageData);
-      setVisaDestination(packageData.country);
+      setPackageDetails(detailsData);
 
-      if (detailsData) {
-        let parsedDetails = { ...detailsData } as any;
-        if (typeof parsedDetails.pricing === 'string') {
-          try {
-            parsedDetails.pricing = JSON.parse(parsedDetails.pricing);
-          } catch (e) {
-            parsedDetails.pricing = { with_flights: {}, without_flights: {} };
-          }
-        }
-        if (parsedDetails.activity_details) {
-          (packageData as Package).activity_details = parsedDetails.activity_details;
-        }
-        setPackageDetails(parsedDetails as PackageDetails);
-      } else {
-        setPackageDetails(null);
-      }
-
+      // Track package view
       if (user) {
         await supabase.from('user_activities').insert({
           user_id: user.id,
@@ -315,45 +227,19 @@ const PackageDetail = () => {
     }
   };
 
-  const loadRelatedBlogs = async () => {
-    if (!packageData) return;
-    
-    setBlogsLoading(true);
-    try {
-      const searchQueries = packageData.destinations.map(dest => 
-        `title.ilike.%${dest}%,content.ilike.%${dest}%`
-      );
-      
-      const { data: blogData, error } = await supabase
-        .from('blog')
-        .select('id, title, excerpt, image, author, author_image, created_at, date_written, categories, category')
-        .eq('published', true)
-        .or(searchQueries.join(','))
-        .order('created_at', { ascending: false })
-        .limit(6);
-
-      if (!error && blogData) {
-        setRelatedBlogs(blogData);
-      }
-    } catch (error) {
-      console.error('Error loading related blogs:', error);
-    } finally {
-      setBlogsLoading(false);
-    }
-  };
-
   const getCurrentPrice = () => {
     if (!packageDetails?.pricing) {
       const basePrice = parseInt(packageData?.price?.replace(/[^0-9]/g, '') || '0');
-      return basePrice;
+      return basePrice * parseInt(selectedDuration) * members;
     }
 
     const priceCategory = withFlights ? 'with_flights' : 'without_flights';
-    return packageDetails.pricing[priceCategory]?.[selectedDuration] || 0;
+    const pricePerPerson = packageDetails.pricing[priceCategory]?.[selectedDuration] || 0;
+    return pricePerPerson * members;
   };
 
   const getTotalPrice = () => {
-    return (getCurrentPrice() * members) + addedVisaCost;
+    return getCurrentPrice() + (withVisa ? visaCost * members : 0);
   };
 
   const handleAddToCart = async () => {
@@ -374,12 +260,12 @@ const PackageDetail = () => {
         package_id: packageData.id,
         user_id: user.id,
         days: parseInt(selectedDuration),
-        total_price: getCurrentPrice() * members,
+        total_price: getCurrentPrice(),
         members: members,
         with_flights: withFlights,
         selected_date: selectedDate ? selectedDate.toISOString() : null,
-        with_visa: addedVisaCost > 0,
-        visa_cost: addedVisaCost,
+        with_visa: withVisa,
+        visa_cost: withVisa ? visaCost : 0,
         booking_type: 'cart'
       });
 
@@ -390,6 +276,7 @@ const PackageDetail = () => {
         description: "Package has been added to your cart",
       });
 
+      // Track add to cart action
       await supabase.from('user_activities').insert({
         user_id: user.id,
         action_type: 'add_to_cart',
@@ -430,457 +317,6 @@ const PackageDetail = () => {
     setCurrentImageIndex((prev) => (prev - 1 + images.length) % images.length);
   };
 
-  const getActivityIcon = (activity: string) => {
-    const activityLower = activity.toLowerCase();
-    
-    if (activityLower.includes('train to')) {
-      return <Train className="h-5 w-5 text-blue-600" />;
-    }
-    if (activityLower.includes('flight to') || activityLower.includes('fly to')) {
-      return <Plane className="h-5 w-5 text-indigo-600" />;
-    }
-    if (activityLower.includes('bus to')) {
-      return <Bus className="h-5 w-5 text-green-600" />;
-    }
-    if (activityLower.includes('food') || activityLower.includes('meal') || activityLower.includes('lunch') || activityLower.includes('dinner')) {
-      return <Utensils className="h-5 w-5 text-orange-500" />;
-    }
-    if (activityLower.includes('photo') || activityLower.includes('view') || activityLower.includes('sight')) {
-      return <Camera className="h-5 w-5 text-blue-500" />;
-    }
-    if (activityLower.includes('coffee') || activityLower.includes('tea') || activityLower.includes('break')) {
-      return <Coffee className="h-5 w-5 text-amber-600" />;
-    }
-    if (activityLower.includes('mountain') || activityLower.includes('trek') || activityLower.includes('hike')) {
-      return <Mountain className="h-5 w-5 text-green-600" />;
-    }
-    return <Clock className="h-5 w-5 text-gray-500" />;
-  };
-
-  const generatePDF = async () => {
-    const doc = new jsPDF();
-    const pageWidth = doc.internal.pageSize.width;
-    const pageHeight = doc.internal.pageSize.height;
-    const margin = 20;
-    let yPosition = margin;
-
-    doc.setFillColor(23, 37, 84);
-    doc.rect(0, 0, pageWidth, 60, 'F');
-    
-    doc.setFontSize(24);
-    doc.setFont('helvetica', 'bold');
-    doc.setTextColor(255, 255, 255);
-    doc.text('TravelGenz', margin, 40);
-    
-    doc.setFontSize(10);
-    doc.setFont('helvetica', 'normal');
-    doc.text('Crafting Unforgettable Journeys', margin, 47);
-    
-    yPosition = 70;
-    doc.setFontSize(18);
-    doc.setFont('helvetica', 'bold');
-    doc.setTextColor(0, 0, 0);
-    doc.text(`${user?.email?.split('@')[0] || 'Guest'}'s Personalized Itinerary`, margin, yPosition);
-    
-    yPosition += 15;
-    doc.setFontSize(28);
-    doc.setFont('helvetica', 'bold');
-    doc.setTextColor(23, 37, 84);
-    doc.text(packageData?.title || 'Trip Itinerary', margin, yPosition);
-    
-    yPosition += 15;
-    doc.setFontSize(12);
-    doc.setFont('helvetica', 'normal');
-    doc.setTextColor(100, 100, 100);
-    doc.text(`${selectedDuration} Days • ${packageData?.trip_type || 'Package'} • ${packageData?.destinations.join(' → ')}`, margin, yPosition);
-    
-    yPosition += 8;
-    doc.setFontSize(10);
-    doc.setTextColor(150, 150, 150);
-    doc.text(`Created on ${format(new Date(), 'MMMM dd, yyyy')}`, margin, yPosition);
-    
-    yPosition += 20;
-    
-    doc.setFillColor(240, 249, 255);
-    doc.rect(margin - 5, yPosition - 5, pageWidth - 2 * margin + 10, 25, 'F');
-    doc.setDrawColor(200, 200, 200);
-    doc.rect(margin - 5, yPosition - 5, pageWidth - 2 * margin + 10, 25, 'D');
-    
-    doc.setFontSize(10);
-    doc.setFont('helvetica', 'italic');
-    doc.setTextColor(50, 50, 50);
-    const quote = `"${packageData?.destinations[0]} awaits with unforgettable experiences. This itinerary has been carefully crafted to ensure you make the most of every moment."`;
-    const splitQuote = doc.splitTextToSize(quote, pageWidth - 2 * margin - 10);
-    doc.text(splitQuote, margin, yPosition + 8);
-    
-    yPosition += 35;
-    
-    doc.setFontSize(16);
-    doc.setFont('helvetica', 'bold');
-    doc.setTextColor(23, 37, 84);
-    doc.text('Trip At A Glance', margin, yPosition);
-    yPosition += 10;
-    
-    doc.setDrawColor(200, 200, 200);
-    doc.line(margin, yPosition, pageWidth - margin, yPosition);
-    yPosition += 15;
-    
-    const quickFacts = [
-      { icon: '🗓️', title: 'Duration', value: `${selectedDuration} Days ${parseInt(selectedDuration) > 1 ? parseInt(selectedDuration)-1 + ' Nights' : ''}` },
-      { icon: '📍', title: 'Destinations', value: packageData?.destinations.join(', ') },
-      { icon: '✈️', title: 'Flight Option', value: withFlights ? 'Included' : 'Not Included' },
-      { icon: '👥', title: 'Travelers', value: `${members} ${members > 1 ? 'Persons' : 'Person'}` },
-      { icon: '🏨', title: 'Accommodation', value: `${packageDetails?.hotels?.length || 'Premium'} Hotels` },
-      { icon: '📅', title: 'Travel Date', value: selectedDate ? format(selectedDate, 'MMMM dd, yyyy') : 'Flexible' }
-    ];
-    
-    let factX = margin;
-    let factY = yPosition;
-    quickFacts.forEach((fact, index) => {
-      if (index % 3 === 0 && index !== 0) {
-        factX = margin;
-        factY += 30;
-      }
-      
-      doc.setFillColor(245, 245, 245);
-      doc.roundedRect(factX, factY, 55, 25, 3, 3, 'F');
-      doc.setDrawColor(220, 220, 220);
-      doc.roundedRect(factX, factY, 55, 25, 3, 3, 'D');
-      
-      doc.setFontSize(10);
-      doc.setFont('helvetica', 'bold');
-      doc.setTextColor(50, 50, 50);
-      doc.text(`${fact.icon} ${fact.title}`, factX + 5, factY + 8);
-      
-      doc.setFontSize(9);
-      doc.setFont('helvetica', 'normal');
-      doc.setTextColor(80, 80, 80);
-      const splitValue = doc.splitTextToSize(fact.value, 45);
-      doc.text(splitValue, factX + 5, factY + 16);
-      
-      factX += 60;
-    });
-    
-    yPosition = factY + 35;
-    
-    doc.setFillColor(23, 37, 84);
-    doc.rect(margin, yPosition, pageWidth - 2 * margin, 30, 'F');
-    doc.setFontSize(16);
-    doc.setFont('helvetica', 'bold');
-    doc.setTextColor(255, 255, 255);
-    doc.text('Pricing Summary', margin + 10, yPosition + 20);
-    
-    yPosition += 40;
-    
-    const currentPrice = getCurrentPrice();
-    const totalPrice = currentPrice * members;
-    const originalPrice = parseInt(packageData?.original_price.replace(/[₹,]/g, '') || '0');
-    const totalOriginalPrice = originalPrice * members;
-    const grandTotalPrice = totalPrice + addedVisaCost;
-    
-    const priceDetails = [
-      { item: 'Base Price', value: `₹${currentPrice.toLocaleString()} x ${members}` },
-      { item: 'Subtotal', value: `₹${totalPrice.toLocaleString()}` },
-    ];
-    
-    if (addedVisaCost > 0) {
-      priceDetails.push({ item: 'Visa Fees', value: `₹${addedVisaCost.toLocaleString()}` });
-    }
-    
-    priceDetails.push({ item: 'Grand Total', value: `₹${grandTotalPrice.toLocaleString()}` });
-    
-    priceDetails.forEach((detail, index) => {
-      doc.setFontSize(index === priceDetails.length - 1 ? 12 : 10);
-      doc.setFont('helvetica', index === priceDetails.length - 1 ? 'bold' : 'normal');
-      doc.setTextColor(0, 0, 0);
-      
-      doc.text(detail.item, margin + 5, yPosition + 8);
-      
-      const textWidth = doc.getStringUnitWidth(detail.value) * doc.getFontSize() / doc.internal.scaleFactor;
-      doc.text(detail.value, pageWidth - margin - 5 - textWidth, yPosition + 8);
-      
-      if (index === priceDetails.length - 2) {
-        doc.setDrawColor(200, 200, 200);
-        doc.line(margin, yPosition + 12, pageWidth - margin, yPosition + 12);
-        yPosition += 5;
-      }
-      
-      yPosition += 10;
-    });
-    
-    if (originalPrice > 0 && totalOriginalPrice > totalPrice) {
-      yPosition += 5;
-      doc.setFontSize(10);
-      doc.setFont('helvetica', 'normal');
-      doc.setTextColor(150, 150, 150);
-      doc.text(`You save ₹${(totalOriginalPrice - totalPrice).toLocaleString()} (${Math.round(((totalOriginalPrice - totalPrice)/totalOriginalPrice)*100)}% off)`, margin + 5, yPosition);
-      yPosition += 10;
-    }
-    
-    yPosition += 15;
-    
-    doc.setFontSize(8);
-    doc.setFont('helvetica', 'italic');
-    doc.setTextColor(120, 120, 120);
-    const disclaimer = '* Prices are subject to availability and may change. Final pricing will be confirmed at the time of booking. Taxes and fees included.';
-    const splitDisclaimer = doc.splitTextToSize(disclaimer, pageWidth - 2 * margin);
-    doc.text(splitDisclaimer, margin, yPosition);
-    
-    yPosition += 20;
-    
-    doc.addPage();
-    yPosition = margin;
-    
-    doc.setFontSize(18);
-    doc.setFont('helvetica', 'bold');
-    doc.setTextColor(23, 37, 84);
-    doc.text('Detailed Itinerary', margin, yPosition);
-    yPosition += 10;
-    
-    doc.setDrawColor(200, 200, 200);
-    doc.line(margin, yPosition, pageWidth - margin, yPosition);
-    yPosition += 15;
-    
-    const itinerary = packageDetails?.itinerary?.[selectedDuration] || [];
-    itinerary.forEach((day: any, index: number) => {
-      if (yPosition > pageHeight - 100) {
-        doc.addPage();
-        yPosition = margin;
-      }
-      
-      const dayDate = selectedDate ? 
-        new Date(selectedDate.getTime() + ((day.day - 1) * 24 * 60 * 60 * 1000)) : 
-        null;
-      
-      doc.setFillColor(23, 37, 84);
-      doc.rect(margin - 5, yPosition - 5, pageWidth - 2 * margin + 10, 15, 'F');
-      doc.setFontSize(12);
-      doc.setFont('helvetica', 'bold');
-      doc.setTextColor(255, 255, 255);
-      doc.text(`Day ${day.day}: ${day.title || `Exploring ${packageData?.destinations[0]}`}${dayDate ? ` • ${format(dayDate, 'EEE, MMM dd')}` : ''}`, margin, yPosition + 5);
-      yPosition += 20;
-      
-      if (day.activities && day.activities.length > 0) {
-        day.activities.forEach((activity: string, i: number) => {
-          if (yPosition > pageHeight - 30) {
-            doc.addPage();
-            yPosition = margin;
-          }
-          
-          doc.setFillColor(248, 250, 252);
-          doc.rect(margin, yPosition, pageWidth - 2 * margin, 20, 'F');
-          doc.setDrawColor(220, 220, 220);
-          doc.rect(margin, yPosition, pageWidth - 2 * margin, 20, 'D');
-          
-          doc.setFillColor(23, 37, 84);
-          doc.rect(margin, yPosition, 25, 20, 'F');
-          doc.setFontSize(8);
-          doc.setFont('helvetica', 'bold');
-          doc.setTextColor(255, 255, 255);
-          doc.text(getTimeSlot(i), margin + 5, yPosition + 12);
-          
-          doc.setFontSize(10);
-          doc.setFont('helvetica', 'normal');
-          doc.setTextColor(50, 50, 50);
-          doc.text(activity, margin + 30, yPosition + 12);
-          
-          yPosition += 25;
-        });
-      } else {
-        doc.setFontSize(10);
-        doc.setFont('helvetica', 'italic');
-        doc.setTextColor(150, 150, 150);
-        doc.text('Activities to be customized based on your preferences', margin, yPosition + 5);
-        yPosition += 15;
-      }
-      
-      yPosition += 10;
-    });
-    
-    if (packageDetails?.attractions && packageDetails.attractions.length > 0) {
-      doc.addPage();
-      yPosition = margin;
-      
-      doc.setFontSize(18);
-      doc.setFont('helvetica', 'bold');
-      doc.setTextColor(23, 37, 84);
-      doc.text('Top Attractions', margin, yPosition);
-      yPosition += 10;
-      
-      doc.setDrawColor(200, 200, 200);
-      doc.line(margin, yPosition, pageWidth - margin, yPosition);
-      yPosition += 15;
-      
-      doc.setFontSize(10);
-      doc.setFont('helvetica', 'normal');
-      doc.setTextColor(80, 80, 80);
-      
-      packageDetails.attractions.forEach((attraction, index) => {
-        if (yPosition > pageHeight - 20) {
-          doc.addPage();
-          yPosition = margin;
-        }
-        
-        const fillColor = index % 2 === 0 ? [248, 250, 252] : [255, 255, 255];
-        doc.rect(margin, yPosition, pageWidth - 2 * margin, 10, 'F');
-        
-        doc.text(`✓ ${attraction}`, margin + 5, yPosition + 7);
-        yPosition += 10;
-      });
-      
-      yPosition += 15;
-    }
-    
-    if (packageDetails?.hotels && packageDetails.hotels.length > 0) {
-      doc.addPage();
-      yPosition = margin;
-      
-      doc.setFontSize(18);
-      doc.setFont('helvetica', 'bold');
-      doc.setTextColor(23, 37, 84);
-      doc.text('Accommodations', margin, yPosition);
-      yPosition += 10;
-      
-      doc.setDrawColor(200, 200, 200);
-      doc.line(margin, yPosition, pageWidth - margin, yPosition);
-      yPosition += 15;
-      
-      doc.setFontSize(10);
-      packageDetails.hotels.forEach((hotel, index) => {
-        if (yPosition > pageHeight - 50) {
-          doc.addPage();
-          yPosition = margin;
-        }
-        
-        doc.setFont('helvetica', 'bold');
-        doc.setTextColor(23, 37, 84);
-        doc.text(`🏨 ${hotel}`, margin, yPosition);
-        yPosition += 7;
-        
-        doc.setFont('helvetica', 'normal');
-        doc.setTextColor(100, 100, 100);
-        doc.text('4-star property with premium amenities and excellent location', margin + 10, yPosition);
-        yPosition += 15;
-      });
-      
-      yPosition += 10;
-    }
-    
-    doc.addPage();
-    yPosition = margin;
-    
-    doc.setFontSize(18);
-    doc.setFont('helvetica', 'bold');
-    doc.setTextColor(23, 37, 84);
-    doc.text('Package Inclusions', margin, yPosition);
-    yPosition += 10;
-    
-    doc.setDrawColor(200, 200, 200);
-    doc.line(margin, yPosition, pageWidth - margin, yPosition);
-    yPosition += 15;
-    
-    doc.setFontSize(10);
-    doc.setFont('helvetica', 'normal');
-    doc.setTextColor(80, 80, 80);
-    
-    packageData?.includes.forEach((inclusion, index) => {
-      if (yPosition > pageHeight - 20) {
-        doc.addPage();
-        yPosition = margin;
-      }
-      
-      const fillColor = index % 2 === 0 ? [248, 250, 252] : [255, 255, 255];
-      doc.rect(margin, yPosition, pageWidth - 2 * margin, 10, 'F');
-      
-      doc.text(`✓ ${inclusion}`, margin + 5, yPosition + 7);
-      yPosition += 10;
-    });
-
-    if (packageDetails?.activity_details?.list) {
-      packageDetails.activity_details.list.forEach((activity, index) => {
-        if (yPosition > pageHeight - 20) {
-          doc.addPage();
-          yPosition = margin;
-        }
-        
-        doc.rect(margin, yPosition, pageWidth - 2 * margin, 10, 'F');
-        doc.text(`✓ ${activity}`, margin + 5, yPosition + 7);
-        yPosition += 10;
-      });
-    }
-    
-    yPosition += 20;
-    
-    doc.setFontSize(14);
-    doc.setFont('helvetica', 'bold');
-    doc.setTextColor(23, 37, 84);
-    doc.text('How To Book', margin, yPosition);
-    yPosition += 10;
-    
-    doc.setDrawColor(200, 200, 200);
-    doc.line(margin, yPosition, pageWidth - margin, yPosition);
-    yPosition += 15;
-    
-    const bookingSteps = [
-      "1. Review this itinerary and make any desired changes",
-      "2. Contact our travel experts to confirm availability",
-      "3. Make a 20% deposit to secure your booking",
-      "4. Receive your booking confirmation and travel documents",
-      "5. Pay the remaining balance 30 days before departure"
-    ];
-    
-    doc.setFontSize(10);
-    bookingSteps.forEach((step, index) => {
-      doc.text(step, margin + 5, yPosition + 5);
-      yPosition += 10;
-    });
-    
-    yPosition += 20;
-    
-    doc.setFillColor(240, 249, 255);
-    doc.rect(margin - 5, yPosition - 5, pageWidth - 2 * margin + 10, 40, 'F');
-    doc.setDrawColor(200, 200, 200);
-    doc.rect(margin - 5, yPosition - 5, pageWidth - 2 * margin + 10, 40, 'D');
-    
-    doc.setFontSize(12);
-    doc.setFont('helvetica', 'bold');
-    doc.setTextColor(23, 37, 84);
-    doc.text('Need Assistance?', margin, yPosition + 10);
-    
-    doc.setFontSize(10);
-    doc.setFont('helvetica', 'normal');
-    doc.text('Email: info@travelgenz.com', margin, yPosition + 20);
-    doc.text('Phone: +1 (555) 123-4567', margin, yPosition + 30);
-    
-    doc.save(`${packageData?.title.replace(/\s+/g, '_') || 'TravelGenz_Itinerary'}.pdf`);
-    
-    toast({
-      title: "PDF Downloaded",
-      description: "Your complete itinerary has been downloaded",
-    });
-
-    if (user && packageData) {
-      await supabase.from('user_activities').insert({
-        user_id: user.id,
-        action_type: 'download_itinerary',
-        item_type: 'package',
-        item_id: packageData.id,
-        item_name: packageData.title,
-        user_email: user.email
-      });
-    }
-  };
-
-  const getTimeSlot = (index: number) => {
-    const timeSlots = ['MORNING', 'AFTERNOON', 'EVENING', 'NIGHT'];
-    return timeSlots[index] || 'ACTIVITY';
-  };
-
-  const calculateVisaCost = () => {
-    if (!visaDestination || !visaRates[visaDestination]) return 0;
-    return visaRates[visaDestination][visaDuration] || 0;
-  };
-
   if (loading) {
     return (
       <div className="min-h-screen flex flex-col">
@@ -915,13 +351,13 @@ const PackageDetail = () => {
     : [packageData.image].filter(Boolean);
 
   const currentItinerary = packageDetails?.itinerary?.[selectedDuration] || [];
-  const totalVisaCost = calculateVisaCost() * visaMembers;
 
   return (
     <div className="min-h-screen bg-gray-50">
       <Navbar />
       
       <main className="pt-16 md:pt-20">
+        {/* Mobile Header */}
         <div className="lg:hidden bg-white border-b px-4 py-3">
           <div className="flex items-center justify-between">
             <Button
@@ -943,6 +379,7 @@ const PackageDetail = () => {
           </div>
         </div>
 
+        {/* Hero Image Section */}
         <div className="relative">
           <div className="h-48 md:h-64 lg:h-96 relative overflow-hidden">
             <img 
@@ -952,6 +389,7 @@ const PackageDetail = () => {
             />
             <div className="absolute inset-0 bg-black bg-opacity-30"></div>
             
+            {/* Desktop Back Button */}
             <div className="hidden lg:block absolute top-4 left-4">
               <Button
                 variant="secondary"
@@ -963,6 +401,7 @@ const PackageDetail = () => {
               </Button>
             </div>
 
+            {/* Desktop Share/Save Buttons */}
             <div className="hidden lg:block absolute top-4 right-4">
               <div className="flex gap-2">
                 <Button variant="secondary" size="sm" className="bg-white/90 hover:bg-white">
@@ -974,6 +413,7 @@ const PackageDetail = () => {
               </div>
             </div>
 
+            {/* Gallery Navigation */}
             {images.length > 1 && (
               <>
                 <button
@@ -989,12 +429,14 @@ const PackageDetail = () => {
                   <ChevronRight className="h-4 w-4 md:h-5 md:w-5" />
                 </button>
                 
+                {/* Image Counter */}
                 <div className="absolute bottom-2 md:bottom-4 right-2 md:right-4 bg-black/60 text-white px-2 md:px-3 py-1 rounded-full text-xs md:text-sm">
                   {currentImageIndex + 1} / {images.length}
                 </div>
               </>
             )}
 
+            {/* Gallery Button */}
             {images.length > 1 && (
               <button
                 onClick={() => setShowGallery(true)}
@@ -1009,7 +451,9 @@ const PackageDetail = () => {
 
         <div className="max-w-7xl mx-auto px-4 py-4 md:py-6 lg:py-8">
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 md:gap-6 lg:gap-8">
+            {/* Main Content */}
             <div className="lg:col-span-2 space-y-4 md:space-y-6">
+              {/* Package Header */}
               <Card>
                 <CardContent className="p-4 md:p-6">
                   <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-3 md:gap-4 mb-4">
@@ -1031,6 +475,7 @@ const PackageDetail = () => {
                       </div>
                     </div>
                     
+                    {/* Price Display - Mobile */}
                     <div className="lg:hidden text-right">
                       {packageData.original_price && (
                         <span className="text-sm md:text-base text-red-500 line-through block">
@@ -1044,6 +489,7 @@ const PackageDetail = () => {
                     </div>
                   </div>
 
+                  {/* Destinations */}
                   <div className="mb-4">
                     <h3 className="font-semibold mb-2 text-sm md:text-base">Destinations</h3>
                     <div className="flex flex-wrap gap-1 md:gap-2">
@@ -1055,6 +501,7 @@ const PackageDetail = () => {
                     </div>
                   </div>
 
+                  {/* Package Features */}
                   <div className="grid grid-cols-2 md:grid-cols-4 gap-2 md:gap-4 text-xs md:text-sm">
                     <div className="flex items-center gap-1 md:gap-2">
                       <span>🏨</span>
@@ -1070,21 +517,21 @@ const PackageDetail = () => {
                     </div>
                     <div className="flex items-center gap-1 md:gap-2">
                       <span>🎯</span>
-                      <span>{(packageData.activity_details?.count || packageDetails?.activity_details?.count || 0)} Activities</span>
+                      <span>{packageData.activities_count || 0} Activities</span>
                     </div>
                   </div>
                 </CardContent>
               </Card>
 
+              {/* Package Details Tabs */}
               <Card>
                 <CardContent className="p-4 md:p-6">
                   <Tabs defaultValue="overview" className="w-full">
-                    <TabsList className="grid w-full grid-cols-3 md:grid-cols-5 text-xs md:text-sm">
+                    <TabsList className="grid w-full grid-cols-3 md:grid-cols-4 text-xs md:text-sm">
                       <TabsTrigger value="overview">Overview</TabsTrigger>
                       <TabsTrigger value="itinerary">Itinerary</TabsTrigger>
                       <TabsTrigger value="inclusions">Inclusions</TabsTrigger>
-                      <TabsTrigger value="hotels">Hotels</TabsTrigger>
-                      <TabsTrigger value="blogs" onClick={loadRelatedBlogs}>Blog</TabsTrigger>
+                      <TabsTrigger value="hotels" className="hidden md:block">Hotels</TabsTrigger>
                     </TabsList>
 
                     <TabsContent value="overview" className="mt-4 md:mt-6">
@@ -1204,12 +651,6 @@ const PackageDetail = () => {
                             <span>{inclusion}</span>
                           </div>
                         ))}
-                        {packageDetails?.activity_details?.list && packageDetails.activity_details.list.map((activity, index) => (
-                          <div key={`activity-${index}`} className="flex items-center gap-2 text-sm md:text-base">
-                            <CheckCircle className="h-3 w-3 md:h-4 md:w-4 text-blue-500 flex-shrink-0" />
-                            <span>{activity}</span>
-                          </div>
-                        ))}
                       </div>
                     </TabsContent>
 
@@ -1229,219 +670,12 @@ const PackageDetail = () => {
                         </div>
                       )}
                     </TabsContent>
-
-                    <TabsContent value="blogs" className="mt-4 md:mt-6">
-                      <Card>
-                        <CardContent className="p-6">
-                          <h3 className="text-xl font-bold mb-6">Blog & Useful Tips</h3>
-                          
-                          {blogsLoading ? (
-                            <div className="flex justify-center py-8">
-                              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-travel-primary"></div>
-                            </div>
-                          ) : relatedBlogs.length > 0 ? (
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                              {relatedBlogs.map((blog) => (
-                                <div
-                                  key={blog.id}
-                                  onClick={() => navigate(`/blog/${blog.id}`)}
-                                  className="bg-white border rounded-lg overflow-hidden hover:shadow-lg transition-shadow cursor-pointer group"
-                                >
-                                  {blog.image && (
-                                    <img 
-                                      src={blog.image}
-                                      alt={blog.title}
-                                      className="w-full h-48 object-cover group-hover:scale-105 transition-transform duration-300"
-                                    />
-                                  )}
-                                  <div className="p-4">
-                                    <h4 className="font-semibold text-lg mb-2 text-gray-900 line-clamp-2 group-hover:text-travel-primary transition-colors">
-                                      {blog.title}
-                                    </h4>
-                                    <p className="text-gray-600 text-sm mb-3 line-clamp-3">
-                                      {blog.excerpt}
-                                    </p>
-                                    <div className="flex items-center justify-between text-sm text-gray-500">
-                                      <span>{blog.author}</span>
-                                      <span>{format(new Date(blog.date_written || blog.created_at), 'MMMM dd, yyyy')}</span>
-                                    </div>
-                                  </div>
-                                </div>
-                              ))}
-                            </div>
-                          ) : (
-                            <div className="text-center py-8 text-gray-500">
-                              <p>No related articles found for this destination.</p>
-                            </div>
-                          )}
-                        </CardContent>
-                      </Card>
-                    </TabsContent>
-                  </Tabs>
-                </CardContent>
-              </Card>
-
-              <Card>
-                <CardContent className="p-6">
-                  <Tabs defaultValue="visa">
-                    <TabsList className="grid w-full grid-cols-2">
-                      <TabsTrigger value="visa">
-                        <ClipboardCheck className="mr-2 h-4 w-4" /> Visa Assistance
-                      </TabsTrigger>
-                      <TabsTrigger value="download" onClick={generatePDF}>
-                        <Download className="mr-2 h-4 w-4" /> Download Itinerary
-                      </TabsTrigger>
-                    </TabsList>
-
-                    <TabsContent value="visa" className="mt-6">
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        <div className="space-y-4">
-                          <div>
-                            <label className="block text-sm font-medium text-gray-700">Departure Country</label>
-                            <select
-                                value={visaOrigin}
-                                onChange={(e) => setVisaOrigin(e.target.value)}
-                                className="mt-1 block w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-green-500"
-                            >
-                                <option value="">Select Country</option>
-                                {countries.map((country) => (
-                                    <option key={country} value={country}>{country}</option>
-                                ))}
-                            </select>
-                          </div>
-                          <div>
-                              <label className="block text-sm font-medium text-gray-700">Destination Country</label>
-                              <select
-                                  value={visaDestination}
-                                  onChange={(e) => setVisaDestination(e.target.value)}
-                                  className="mt-1 block w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-green-500"
-                              >
-                                  <option value="">Select Country</option>
-                                  {countries.map((country) => (
-                                      <option key={country} value={country}>{country}</option>
-                                  ))}
-                              </select>
-                          </div>
-                          <div>
-                              <label className="block text-sm font-medium text-gray-700">Visa Duration</label>
-                              <select
-                                  value={visaDuration}
-                                  onChange={(e) => setVisaDuration(e.target.value)}
-                                  className="mt-1 block w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-green-500"
-                                  disabled={!visaDestination}
-                              >
-                                  {visaDurations.map((d) => (
-                                      <option key={d} value={d}>{d}</option>
-                                  ))}
-                              </select>
-                          </div>
-                          <div>
-                              <label className="block text-sm font-medium text-gray-700">Number of Members</label>
-                              <div className="flex items-center gap-4 mt-1">
-                                  <Button
-                                      variant="outline"
-                                      size="sm"
-                                      onClick={() => setVisaMembers(Math.max(1, visaMembers - 1))}
-                                      disabled={visaMembers <= 1}
-                                  >
-                                      <Minus className="h-4 w-4" />
-                                  </Button>
-                                  <span className="font-semibold">{visaMembers}</span>
-                                  <Button
-                                      variant="outline"
-                                      size="sm"
-                                      onClick={() => setVisaMembers(visaMembers + 1)}
-                                  >
-                                      <Plus className="h-4 w-4" />
-                                  </Button>
-                              </div>
-                          </div>
-                        </div>
-                        <div className="bg-gray-50 p-6 rounded-lg space-y-4 flex flex-col justify-center">
-                          <h4 className="text-lg font-bold">Visa Cost Summary</h4>
-                          <div className="flex justify-between">
-                              <span>Visa Cost per Member:</span>
-                              <span className="font-semibold">₹{calculateVisaCost().toLocaleString()}</span>
-                          </div>
-                          <div className="flex justify-between">
-                              <span>Members:</span>
-                              <span className="font-semibold">{visaMembers}</span>
-                          </div>
-                          <hr />
-                          <div className="flex justify-between text-xl font-bold">
-                              <span>Total Visa Cost:</span>
-                              <span className="text-green-600">₹{totalVisaCost.toLocaleString()}</span>
-                          </div>
-                          
-                          <Button
-                              className={`w-full ${addedVisaCost > 0 ? '' : 'bg-green-600 hover:bg-green-700'}`}
-                              onClick={() => {
-                                  if (addedVisaCost > 0) {
-                                      setAddedVisaCost(0);
-                                  } else {
-                                      setAddedVisaCost(totalVisaCost);
-                                  }
-                              }}
-                              disabled={totalVisaCost === 0 && addedVisaCost === 0}
-                              variant={addedVisaCost > 0 ? "destructive" : "default"}
-                          >
-                              {addedVisaCost > 0 ? `Remove Visa Cost (₹${addedVisaCost.toLocaleString()})` : "Add Visa Cost to Package"}
-                          </Button>
-                        </div>
-                      </div>
-                    </TabsContent>
-
-                    <TabsContent value="download" className="mt-6">
-                      <div className="text-center space-y-6">
-                        <div className="max-w-md mx-auto">
-                          <h3 className="text-2xl font-bold text-gray-900 mb-4">Download Your Itinerary</h3>
-                          <p className="text-gray-600 mb-6">
-                            Get a comprehensive PDF document with your complete travel itinerary, 
-                            including day-by-day activities, pricing details, and package inclusions.
-                          </p>
-                          
-                          <div className="bg-gray-50 rounded-lg p-4 mb-6">
-                            <h4 className="font-semibold text-gray-900 mb-3">Your PDF will include:</h4>
-                            <div className="space-y-2 text-sm text-gray-700">
-                              <div className="flex items-center gap-2">
-                                <div className="w-2 h-2 bg-green-500 rounded-full"></div>
-                                <span>Complete {selectedDuration}-day itinerary</span>
-                              </div>
-                              <div className="flex items-center gap-2">
-                                <div className="w-2 h-2 bg-green-500 rounded-full"></div>
-                                <span>Pricing breakdown for {members} member(s)</span>
-                              </div>
-                              <div className="flex items-center gap-2">
-                                <div className="w-2 h-2 bg-green-500 rounded-full"></div>
-                                <span>Package inclusions & attractions</span>
-                              </div>
-                              <div className="flex items-center gap-2">
-                                <div className="w-2 h-2 bg-green-500 rounded-full"></div>
-                                <span>Day-wise activity schedule</span>
-                              </div>
-                            </div>
-                          </div>
-
-                          <Button 
-                            onClick={generatePDF}
-                            className="w-full bg-blue-600 hover:bg-blue-700 text-white py-4 text-lg"
-                            size="lg"
-                          >
-                            <Download className="mr-2 h-5 w-5" />
-                            Download PDF Itinerary
-                          </Button>
-                          
-                          <p className="text-xs text-gray-500 mt-3">
-                            PDF will be downloaded to your device immediately
-                          </p>
-                        </div>
-                      </div>
-                    </TabsContent>
                   </Tabs>
                 </CardContent>
               </Card>
             </div>
 
+            {/* Booking Sidebar */}
             <div className="lg:col-span-1">
               <div className="sticky top-20 md:top-24">
                 <Card className="shadow-lg">
@@ -1449,6 +683,7 @@ const PackageDetail = () => {
                     <CardTitle className="text-lg md:text-xl">Book This Package</CardTitle>
                   </CardHeader>
                   <CardContent className="space-y-4 md:space-y-6">
+                    {/* Duration Selection */}
                     <div>
                       <label className="block text-sm font-medium mb-2">Duration</label>
                       <div className="grid grid-cols-3 gap-2">
@@ -1466,6 +701,7 @@ const PackageDetail = () => {
                       </div>
                     </div>
 
+                    {/* Date Selection */}
                     <div>
                       <label className="block text-sm font-medium mb-2">Travel Date</label>
                       <Popover>
@@ -1493,6 +729,7 @@ const PackageDetail = () => {
                       </Popover>
                     </div>
 
+                    {/* Members Selection */}
                     <div>
                       <label className="block text-sm font-medium mb-2">Number of Travelers</label>
                       <div className="flex items-center justify-between border rounded-lg p-2 md:p-3">
@@ -1517,6 +754,7 @@ const PackageDetail = () => {
                       </div>
                     </div>
 
+                    {/* Flight Option */}
                     <div className="flex items-center space-x-2">
                       <input
                         type="checkbox"
@@ -1528,15 +766,28 @@ const PackageDetail = () => {
                       <label htmlFor="flights" className="text-sm md:text-base">Include Flights</label>
                     </div>
 
+                    {/* Visa Option */}
+                    <div className="flex items-center space-x-2">
+                      <input
+                        type="checkbox"
+                        id="visa"
+                        checked={withVisa}
+                        onChange={(e) => setWithVisa(e.target.checked)}
+                        className="rounded border-gray-300"
+                      />
+                      <label htmlFor="visa" className="text-sm md:text-base">Visa Assistance (+₹{visaCost.toLocaleString()})</label>
+                    </div>
+
+                    {/* Price Summary */}
                     <div className="border-t pt-4 space-y-2">
                       <div className="flex justify-between text-sm md:text-base">
                         <span>Package ({selectedDuration} days × {members} {members === 1 ? 'person' : 'people'})</span>
-                        <span>₹{(getCurrentPrice() * members).toLocaleString()}</span>
+                        <span>₹{getCurrentPrice().toLocaleString()}</span>
                       </div>
-                      {addedVisaCost > 0 && (
+                      {withVisa && (
                         <div className="flex justify-between text-sm md:text-base">
                           <span>Visa Assistance</span>
-                          <span>₹{addedVisaCost.toLocaleString()}</span>
+                          <span>₹{(visaCost * members).toLocaleString()}</span>
                         </div>
                       )}
                       <div className="flex justify-between font-bold text-base md:text-lg border-t pt-2">
@@ -1545,6 +796,7 @@ const PackageDetail = () => {
                       </div>
                     </div>
 
+                    {/* Action Buttons */}
                     <div className="space-y-2 md:space-y-3">
                       <Button 
                         onClick={handleBookNow}
@@ -1562,6 +814,7 @@ const PackageDetail = () => {
                       </Button>
                     </div>
 
+                    {/* Contact Info */}
                     <div className="text-center text-xs md:text-sm text-gray-600 border-t pt-4">
                       <p>Need help? Call us at</p>
                       <p className="font-semibold text-travel-primary">+91 9910565588</p>
@@ -1573,6 +826,7 @@ const PackageDetail = () => {
           </div>
         </div>
 
+        {/* Gallery Modal */}
         {showGallery && (
           <div className="fixed inset-0 bg-black bg-opacity-90 z-50 flex items-center justify-center p-4">
             <div className="relative max-w-4xl w-full">
@@ -1615,6 +869,7 @@ const PackageDetail = () => {
           </div>
         )}
 
+        {/* Mobile Sticky Bottom Bar */}
         <div className="lg:hidden fixed bottom-0 left-0 right-0 bg-white border-t shadow-lg p-3 md:p-4 z-40">
           <div className="flex items-center justify-between gap-3">
             <div className="flex-1">
@@ -1642,11 +897,13 @@ const PackageDetail = () => {
           </div>
         </div>
 
+        {/* Add bottom padding for mobile sticky bar */}
         <div className="lg:hidden h-20"></div>
       </main>
 
       <Footer />
 
+      {/* Booking Popup */}
       <BookingPopup
         open={isBookingPopupOpen}
         onOpenChange={setIsBookingPopupOpen}
@@ -1655,10 +912,10 @@ const PackageDetail = () => {
           nights: packageData.nights || parseInt(selectedDuration)
         }}
         members={members}
-        totalPrice={getCurrentPrice() * members}
+        totalPrice={getCurrentPrice()}
         withFlights={withFlights}
         selectedDate={selectedDate}
-        visaCost={addedVisaCost}
+        visaCost={withVisa ? visaCost : 0}
       />
     </div>
   );
