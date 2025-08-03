@@ -1128,7 +1128,7 @@ const PackageDetail = () => {
                       </div>
                     </TabsContent>
 
-                    <TabsContent value="itinerary" className="mt-4 md:mt-6">
+                    <TabsContent value="itinerary" className="mt-[4rem] md:mt-6">
                       <div className="space-y-4 md:space-y-6">
                         <div className="flex flex-wrap gap-2 md:gap-3">
                           {['3', '5', '7'].map((duration) => (
@@ -1197,7 +1197,7 @@ const PackageDetail = () => {
                       </div>
                     </TabsContent>
 
-                    <TabsContent value="inclusions" className="mt-4 md:mt-6">
+                    <TabsContent value="inclusions" className="mt-[4rem] md:mt-6">
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-3 md:gap-4">
                         {packageData.includes.map((inclusion, index) => (
                           <div key={index} className="flex items-center gap-2 text-sm md:text-base">
@@ -1214,7 +1214,7 @@ const PackageDetail = () => {
                       </div>
                     </TabsContent>
 
-                    <TabsContent value="hotels" className="mt-4 md:mt-6">
+                    <TabsContent value="hotels" className="mt-[4rem] md:mt-6">
                       {packageDetails?.hotels && packageDetails.hotels.length > 0 ? (
                         <div className="space-y-3 md:space-y-4">
                           {packageDetails.hotels.map((hotel, index) => (
@@ -1231,7 +1231,7 @@ const PackageDetail = () => {
                       )}
                     </TabsContent>
 
-                    <TabsContent value="blogs" className="mt-4 md:mt-6">
+                    <TabsContent value="blogs" className="mt-[4rem] md:mt-6">
                       <Card>
                         <CardContent className="p-6">
                           <h3 className="text-xl font-bold mb-6">Blog & Useful Tips</h3>
