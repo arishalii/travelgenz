@@ -153,8 +153,7 @@ const DestinationCard = ({ destination, onClick, size }: {
             className="w-full h-full object-cover"
           />
           <div className="absolute inset-0 bg-black/40 flex items-center justify-center">
-            <h3 className={`font-semibold text-white text-[0.65rem] text-center px-1 sm:px-2 group-hover:text-travel-accent transition-colors`}>
-
+            <h3 className={`font-semibold text-white ${dimensions[size].text} text-center px-1 sm:px-2 group-hover:text-travel-accent transition-colors`}>
               {destination.name}
             </h3>
           </div>
@@ -163,7 +162,11 @@ const DestinationCard = ({ destination, onClick, size }: {
         <div className={`relative ${dimensions[size].container} mx-auto mb-2 md:mb-3 rounded-full bg-gradient-to-br from-travel-primary to-travel-accent flex items-center justify-center ${dimensions[size].emoji} group-hover:scale-110 transition-transform duration-300 shadow-lg`}>
           {destination.emoji}
           <div className="absolute inset-0 bg-black/20 rounded-full flex items-center justify-center">
-            <h3 className={`font-semibold text-white ${dimensions[size].text} text-center px-1 sm:px-2 group-hover:text-travel-accent transition-colors`}>
+            <h3
+  style={{ fontSize: '0.65rem' }}
+  className="font-semibold text-white text-center px-1 sm:px-2 group-hover:text-travel-accent transition-colors"
+>
+
               {destination.name}
             </h3>
           </div>
