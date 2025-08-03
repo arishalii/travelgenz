@@ -976,22 +976,9 @@ const PackageDetail = () => {
 
             {images.length > 1 && (
               <>
-                <button
-                  onClick={prevImage}
-                  className="absolute left-2 md:left-4 top-1/2 transform -translate-y-1/2 bg-white/80 hover:bg-white rounded-full p-1 md:p-2 transition-colors"
-                >
-                  <ChevronLeft className="h-4 w-4 md:h-5 md:w-5" />
-                </button>
-                <button
-                  onClick={nextImage}
-                  className="absolute right-2 md:right-4 top-1/2 transform -translate-y-1/2 bg-white/80 hover:bg-white rounded-full p-1 md:p-2 transition-colors"
-                >
-                  <ChevronRight className="h-4 w-4 md:h-5 md:w-5" />
-                </button>
                 
-                <div className="absolute bottom-2 md:bottom-4 right-2 md:right-4 bg-black/60 text-white px-2 md:px-3 py-1 rounded-full text-xs md:text-sm">
-                  {currentImageIndex + 1} / {images.length}
-                </div>
+                
+               
               </>
             )}
 
