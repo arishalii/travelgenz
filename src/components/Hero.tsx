@@ -26,6 +26,15 @@ const Hero = () => {
   const [guests, setGuests] = useState(2);
   const [withFlights, setWithFlights] = useState(true);
   const [showGuestPopover, setShowGuestPopover] = useState(false);
+  const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
+
+  useEffect(() => {
+    const handleResize = () => {
+      setIsMobile(window.innerWidth < 768);
+    };
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
 
   useEffect(() => {
     const loadDestinations = async () => {
@@ -82,105 +91,196 @@ const Hero = () => {
 
       <div className="relative z-10 max-w-7xl mx-auto text-center text-white flex-grow flex flex-col justify-center w-full">
         <div className="mb-8 md:mb-16 px-2 md:px-[10px] pt-[80px] md:pt-[126px] pb-0">
-          <h1 className="text-5xl md:text-7xl font-bold mb-6 leading-tight">
+          <h1 className="text-4xl sm:text-5xl md:text-7xl font-bold mb-6 leading-tight">
             Travel <span className="text-purple-400">Luxuriously</span>,
             <br />
             Pay <span className="text-pink-400">Less</span> ✈️
           </h1>
-          <p className="text-lg md:text-xl lg:text-2xl mb-6 md:mb-8 text-white max-w-4xl mx-auto leading-relaxed px-4">
+          <p className="text-base sm:text-lg md:text-xl lg:text-2xl mb-6 md:mb-8 text-white max-w-4xl mx-auto leading-relaxed px-4">
             Handcrafted trips that cost 10-20% less than major booking sites.
-            <br />
+            <br className="hidden sm:block" />
             No bots, just genuine human travel expertise.
           </p>
 
           <div className="max-w-6xl mx-auto mb-6 md:mb-8 px-2">
-            <div className="bg-white/95 backdrop-blur-sm rounded-2xl p-3 md:p-4 flex flex-col lg:flex-row gap-3 shadow-2xl">
-              <div className="flex-1 relative">
-                <input 
-                  type="text" 
-                  placeholder="Where to? (e.g., Bali, Tokyo)" 
-                  value={searchLocation} 
-                  onChange={e => setSearchLocation(e.target.value)} 
-                  className="w-full px-4 md:px-6 py-3 md:py-4 rounded-xl border-0 outline-none text-gray-800 placeholder-gray-500 text-base md:text-lg" 
-                />
-              </div>
-              
-              <div className="relative md:mt-[11px]">
-                <Popover>
-                  <PopoverTrigger asChild>
-                    <Button
-                      variant="outline"
-                      className={cn(
-                        "w-full lg:w-56 px-4 md:px-6 py-3 md:py-4 rounded-xl border-0 bg-transparent text-gray-800 placeholder-gray-500 text-base md:text-lg justify-start text-left font-normal",
-                        !searchDate && "text-gray-500"
-                      )}
-                    >
-                      <Calendar className="mr-2 h-4 w-4 md:h-5 md:w-5" />
-                      {searchDate ? format(searchDate, "dd MMM yyyy") : "Departure Date"}
-                    </Button>
-                  </PopoverTrigger>
-                  <PopoverContent className="w-auto p-0 z-50" align="start">
-                    <CalendarComponent
-                      mode="single"
-                      selected={searchDate}
-                      onSelect={setSearchDate}
-                      disabled={(date) => date < new Date()}
-                      initialFocus
+            {isMobile ? (
+              <div className="bg-white/95 backdrop-blur-sm rounded-2xl p-3 shadow-2xl">
+                <div className="space-y-3">
+                  <div className="relative">
+                    <input 
+                      type="text" 
+                      placeholder="Where to? (e.g., Bali, Tokyo)" 
+                      value={searchLocation} 
+                      onChange={e => setSearchLocation(e.target.value)} 
+                      className="w-full px-4 py-3 rounded-xl border-0 outline-none text-gray-800 placeholder-gray-500 text-base" 
                     />
-                  </PopoverContent>
-                </Popover>
-              </div>
+                  </div>
+                  
+                  <div className="relative">
+                    <Popover>
+                      <PopoverTrigger asChild>
+                        <Button
+                          variant="outline"
+                          className={cn(
+                            "w-full px-4 py-3 rounded-xl border-0 bg-transparent text-gray-800 placeholder-gray-500 text-base justify-start text-left font-normal",
+                            !searchDate && "text-gray-500"
+                          )}
+                        >
+                          <Calendar className="mr-2 h-4 w-4" />
+                          {searchDate ? format(searchDate, "dd MMM yyyy") : "Departure Date"}
+                        </Button>
+                      </PopoverTrigger>
+                      <PopoverContent className="w-auto p-0 z-50" align="start">
+                        <CalendarComponent
+                          mode="single"
+                          selected={searchDate}
+                          onSelect={setSearchDate}
+                          disabled={(date) => date < new Date()}
+                          initialFocus
+                        />
+                      </PopoverContent>
+                    </Popover>
+                  </div>
 
-              <div className="relative md:mt-[11px]">
-                <Popover open={showGuestPopover} onOpenChange={setShowGuestPopover}>
-                  <PopoverTrigger asChild>
-                    <Button variant="outline" className="w-full lg:w-48 px-4 md:px-6 py-3 md:py-4 rounded-xl border-0 bg-transparent text-gray-800 text-base md:text-lg justify-start text-left font-normal">
-                      <Users className="mr-2 h-4 w-4 md:h-5 md:w-5" />
-                      {rooms} Room{rooms > 1 ? 's' : ''}, {guests} Guest{guests > 1 ? 's' : ''}
-                    </Button>
-                  </PopoverTrigger>
-                  <PopoverContent className="w-80 p-4 z-50" align="start">
-                    <div className="space-y-4">
-                      <div className="flex items-center justify-between">
-                        <label className="text-sm font-medium">Rooms</label>
-                        <div className="flex items-center gap-3">
-                          <button onClick={() => adjustGuests('rooms', 'decrement')} className="w-8 h-8 rounded-full border border-gray-300 flex items-center justify-center hover:bg-gray-100">
-                            -
-                          </button>
-                          <span className="w-8 text-center">{rooms}</span>
-                          <button onClick={() => adjustGuests('rooms', 'increment')} className="w-8 h-8 rounded-full border border-gray-300 flex items-center justify-center hover:bg-gray-100">
-                            +
-                          </button>
+                  <div className="relative">
+                    <Popover open={showGuestPopover} onOpenChange={setShowGuestPopover}>
+                      <PopoverTrigger asChild>
+                        <Button variant="outline" className="w-full px-4 py-3 rounded-xl border-0 bg-transparent text-gray-800 text-base justify-start text-left font-normal">
+                          <Users className="mr-2 h-4 w-4" />
+                          {rooms} Room{rooms > 1 ? 's' : ''}, {guests} Guest{guests > 1 ? 's' : ''}
+                        </Button>
+                      </PopoverTrigger>
+                      <PopoverContent className="w-72 p-4 z-50" align="start">
+                        <div className="space-y-4">
+                          <div className="flex items-center justify-between">
+                            <label className="text-sm font-medium">Rooms</label>
+                            <div className="flex items-center gap-3">
+                              <button onClick={() => adjustGuests('rooms', 'decrement')} className="w-8 h-8 rounded-full border border-gray-300 flex items-center justify-center hover:bg-gray-100">
+                                -
+                              </button>
+                              <span className="w-8 text-center">{rooms}</span>
+                              <button onClick={() => adjustGuests('rooms', 'increment')} className="w-8 h-8 rounded-full border border-gray-300 flex items-center justify-center hover:bg-gray-100">
+                                +
+                              </button>
+                            </div>
+                          </div>
+                          <div className="flex items-center justify-between">
+                            <label className="text-sm font-medium">Guests</label>
+                            <div className="flex items-center gap-3">
+                              <button onClick={() => adjustGuests('guests', 'decrement')} className="w-8 h-8 rounded-full border border-gray-300 flex items-center justify-center hover:bg-gray-100">
+                                -
+                              </button>
+                              <span className="w-8 text-center">{guests}</span>
+                              <button onClick={() => adjustGuests('guests', 'increment')} className="w-8 h-8 rounded-full border border-gray-300 flex items-center justify-center hover:bg-gray-100">
+                                +
+                              </button>
+                            </div>
+                          </div>
+                        </div>
+                      </PopoverContent>
+                    </Popover>
+                  </div>
+
+                  <div className="flex items-center justify-between px-2">
+                    <label className="flex items-center gap-2 text-gray-700 cursor-pointer text-sm">
+                      <input type="checkbox" checked={withFlights} onChange={e => setWithFlights(e.target.checked)} className="rounded border-gray-300" />
+                      <span>With Flights</span>
+                    </label>
+                    <button onClick={handleExplore} className="bg-gradient-to-r from-pink-500 to-purple-600 text-white px-6 py-2 rounded-xl font-semibold text-base hover:from-pink-600 hover:to-purple-700 transition-all duration-300 shadow-lg">
+                      🔍 Explore
+                    </button>
+                  </div>
+                </div>
+              </div>
+            ) : (
+              <div className="bg-white/95 backdrop-blur-sm rounded-2xl p-4 flex flex-row gap-3 shadow-2xl">
+                <div className="flex-1 relative">
+                  <input 
+                    type="text" 
+                    placeholder="Where to? (e.g., Bali, Tokyo)" 
+                    value={searchLocation} 
+                    onChange={e => setSearchLocation(e.target.value)} 
+                    className="w-full px-6 py-4 rounded-xl border-0 outline-none text-gray-800 placeholder-gray-500 text-lg" 
+                  />
+                </div>
+                
+                <div className="relative">
+                  <Popover>
+                    <PopoverTrigger asChild>
+                      <Button
+                        variant="outline"
+                        className={cn(
+                          "w-56 px-6 py-4 rounded-xl border-0 bg-transparent text-gray-800 placeholder-gray-500 text-lg justify-start text-left font-normal",
+                          !searchDate && "text-gray-500"
+                        )}
+                      >
+                        <Calendar className="mr-2 h-5 w-5" />
+                        {searchDate ? format(searchDate, "dd MMM yyyy") : "Departure Date"}
+                      </Button>
+                    </PopoverTrigger>
+                    <PopoverContent className="w-auto p-0 z-50" align="start">
+                      <CalendarComponent
+                        mode="single"
+                        selected={searchDate}
+                        onSelect={setSearchDate}
+                        disabled={(date) => date < new Date()}
+                        initialFocus
+                      />
+                    </PopoverContent>
+                  </Popover>
+                </div>
+
+                <div className="relative">
+                  <Popover open={showGuestPopover} onOpenChange={setShowGuestPopover}>
+                    <PopoverTrigger asChild>
+                      <Button variant="outline" className="w-48 px-6 py-4 rounded-xl border-0 bg-transparent text-gray-800 text-lg justify-start text-left font-normal">
+                        <Users className="mr-2 h-5 w-5" />
+                        {rooms} Room{rooms > 1 ? 's' : ''}, {guests} Guest{guests > 1 ? 's' : ''}
+                      </Button>
+                    </PopoverTrigger>
+                    <PopoverContent className="w-80 p-4 z-50" align="start">
+                      <div className="space-y-4">
+                        <div className="flex items-center justify-between">
+                          <label className="text-sm font-medium">Rooms</label>
+                          <div className="flex items-center gap-3">
+                            <button onClick={() => adjustGuests('rooms', 'decrement')} className="w-8 h-8 rounded-full border border-gray-300 flex items-center justify-center hover:bg-gray-100">
+                              -
+                            </button>
+                            <span className="w-8 text-center">{rooms}</span>
+                            <button onClick={() => adjustGuests('rooms', 'increment')} className="w-8 h-8 rounded-full border border-gray-300 flex items-center justify-center hover:bg-gray-100">
+                              +
+                            </button>
+                          </div>
+                        </div>
+                        <div className="flex items-center justify-between">
+                          <label className="text-sm font-medium">Guests</label>
+                          <div className="flex items-center gap-3">
+                            <button onClick={() => adjustGuests('guests', 'decrement')} className="w-8 h-8 rounded-full border border-gray-300 flex items-center justify-center hover:bg-gray-100">
+                              -
+                            </button>
+                            <span className="w-8 text-center">{guests}</span>
+                            <button onClick={() => adjustGuests('guests', 'increment')} className="w-8 h-8 rounded-full border border-gray-300 flex items-center justify-center hover:bg-gray-100">
+                              +
+                            </button>
+                          </div>
                         </div>
                       </div>
-                      <div className="flex items-center justify-between">
-                        <label className="text-sm font-medium">Guests</label>
-                        <div className="flex items-center gap-3">
-                          <button onClick={() => adjustGuests('guests', 'decrement')} className="w-8 h-8 rounded-full border border-gray-300 flex items-center justify-center hover:bg-gray-100">
-                            -
-                          </button>
-                          <span className="w-8 text-center">{guests}</span>
-                          <button onClick={() => adjustGuests('guests', 'increment')} className="w-8 h-8 rounded-full border border-gray-300 flex items-center justify-center hover:bg-gray-100">
-                            +
-                          </button>
-                        </div>
-                      </div>
-                    </div>
-                  </PopoverContent>
-                </Popover>
-              </div>
+                    </PopoverContent>
+                  </Popover>
+                </div>
 
-              <div className="flex items-center gap-2 px-2 md:px-4">
-                <label className="flex items-center gap-2 text-gray-700 cursor-pointer text-sm md:text-base">
-                  <input type="checkbox" checked={withFlights} onChange={e => setWithFlights(e.target.checked)} className="rounded border-gray-300" />
-                  <span className="text-xs md:text-sm">With Flights</span>
-                </label>
-              </div>
+                <div className="flex items-center gap-2 px-4">
+                  <label className="flex items-center gap-2 text-gray-700 cursor-pointer text-sm">
+                    <input type="checkbox" checked={withFlights} onChange={e => setWithFlights(e.target.checked)} className="rounded border-gray-300" />
+                    <span>With Flights</span>
+                  </label>
+                </div>
 
-              <button onClick={handleExplore} className="bg-gradient-to-r from-pink-500 to-purple-600 text-white px-4 md:px-8 py-3 md:py-4 rounded-xl font-semibold text-base md:text-lg hover:from-pink-600 hover:to-purple-700 transition-all duration-300 transform hover:scale-105 shadow-lg">
-                🔍 Explore
-              </button>
-            </div>
+                <button onClick={handleExplore} className="bg-gradient-to-r from-pink-500 to-purple-600 text-white px-8 py-4 rounded-xl font-semibold text-lg hover:from-pink-600 hover:to-purple-700 transition-all duration-300 transform hover:scale-105 shadow-lg">
+                  🔍 Explore
+                </button>
+              </div>
+            )}
           </div>
 
           {destinations.length > 0 && (
