@@ -123,7 +123,7 @@ const CounterSection = () => {
   const currentBackground = backgrounds[currentBgIndex];
 
   return (
-    <section className="relative overflow-hidden pt-6 pb-12 md:pt-8 md:pb-20">
+    <section className="relative overflow-hidden py-8 md:py-20">
       {/* Background Image */}
       {currentBackground && (
         <div 
@@ -136,77 +136,43 @@ const CounterSection = () => {
       
       {/* Content */}
       <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6">
-        <div className="text-center mb-6 md:mb-12">
-          <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-white mb-2 md:mb-4">
+        <div className="text-center mb-8 md:mb-12">
+          <h2 className="text-2xl md:text-3xl font-bold text-white mb-2">
             Our Achievements
           </h2>
-          <p className="text-sm sm:text-base md:text-lg text-gray-200">
+          <p className="text-sm md:text-base text-gray-200">
             Trusted by thousands of travelers worldwide
           </p>
         </div>
         
-        {isMobile ? (
-          <div className="space-y-4">
-            {/* Mobile Carousel-like Layout */}
-            <div className="flex overflow-x-auto pb-4 -mx-4 px-4 space-x-4">
-              {/* Packages Booked */}
-              <div className="flex-shrink-0 w-64 bg-white bg-opacity-10 backdrop-blur-sm rounded-lg p-4 border border-white border-opacity-20">
-                <div className="text-3xl font-bold text-white mb-1 animate-pulse">
-                  {formatNumber(animatedStats.packages_booked)}+
-                </div>
-                <div className="text-base text-gray-200 font-semibold">Packages Booked</div>
-                <div className="text-gray-300 text-xs">Happy travelers exploring the world</div>
-              </div>
-              
-              {/* Visa Booked */}
-              <div className="flex-shrink-0 w-64 bg-white bg-opacity-10 backdrop-blur-sm rounded-lg p-4 border border-white border-opacity-20">
-                <div className="text-3xl font-bold text-white mb-1 animate-pulse">
-                  {formatNumber(animatedStats.visa_booked)}+
-                </div>
-                <div className="text-base text-gray-200 font-semibold">Visa Applications</div>
-                <div className="text-gray-300 text-xs">Successful visa processing</div>
-              </div>
-              
-              {/* Happy Customers */}
-              <div className="flex-shrink-0 w-64 bg-white bg-opacity-10 backdrop-blur-sm rounded-lg p-4 border border-white border-opacity-20">
-                <div className="text-3xl font-bold text-white mb-1 animate-pulse">
-                  {formatNumber(animatedStats.happy_customers)}+
-                </div>
-                <div className="text-base text-gray-200 font-semibold">Happy Customers</div>
-                <div className="text-gray-300 text-xs">Satisfied with our services</div>
-              </div>
+        <div className="flex flex-nowrap md:grid md:grid-cols-3 gap-3 md:gap-6 overflow-x-auto pb-4 -mx-4 px-4 md:mx-0 md:px-0">
+          {/* Packages Booked */}
+          <div className="flex-shrink-0 w-[180px] md:w-auto bg-white bg-opacity-10 backdrop-blur-sm rounded-lg p-4 md:p-6 border border-white border-opacity-20">
+            <div className="text-2xl md:text-4xl font-bold text-white mb-1 animate-pulse">
+              {formatNumber(animatedStats.packages_booked)}+
             </div>
+            <div className="text-sm md:text-lg text-gray-200 font-semibold">Packages</div>
+            <div className="text-xs md:text-sm text-gray-300">Happy travelers</div>
           </div>
-        ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 md:gap-8">
-            {/* Packages Booked */}
-            <div className="text-center bg-white bg-opacity-10 backdrop-blur-sm rounded-lg p-6 md:p-8 border border-white border-opacity-20">
-              <div className="text-3xl md:text-4xl lg:text-5xl font-bold text-white mb-2 animate-pulse">
-                {formatNumber(animatedStats.packages_booked)}+
-              </div>
-              <div className="text-lg md:text-xl text-gray-200 font-semibold">Packages Booked</div>
-              <div className="text-gray-300 mt-1 md:mt-2 text-sm md:text-base">Happy travelers exploring the world</div>
+          
+          {/* Visa Booked */}
+          <div className="flex-shrink-0 w-[180px] md:w-auto bg-white bg-opacity-10 backdrop-blur-sm rounded-lg p-4 md:p-6 border border-white border-opacity-20">
+            <div className="text-2xl md:text-4xl font-bold text-white mb-1 animate-pulse">
+              {formatNumber(animatedStats.visa_booked)}+
             </div>
-            
-            {/* Visa Booked */}
-            <div className="text-center bg-white bg-opacity-10 backdrop-blur-sm rounded-lg p-6 md:p-8 border border-white border-opacity-20">
-              <div className="text-3xl md:text-4xl lg:text-5xl font-bold text-white mb-2 animate-pulse">
-                {formatNumber(animatedStats.visa_booked)}+
-              </div>
-              <div className="text-lg md:text-xl text-gray-200 font-semibold">Visa Applications</div>
-              <div className="text-gray-300 mt-1 md:mt-2 text-sm md:text-base">Successful visa processing</div>
-            </div>
-            
-            {/* Happy Customers */}
-            <div className="text-center bg-white bg-opacity-10 backdrop-blur-sm rounded-lg p-6 md:p-8 border border-white border-opacity-20">
-              <div className="text-3xl md:text-4xl lg:text-5xl font-bold text-white mb-2 animate-pulse">
-                {formatNumber(animatedStats.happy_customers)}+
-              </div>
-              <div className="text-lg md:text-xl text-gray-200 font-semibold">Happy Customers</div>
-              <div className="text-gray-300 mt-1 md:mt-2 text-sm md:text-base">Satisfied with our services</div>
-            </div>
+            <div className="text-sm md:text-lg text-gray-200 font-semibold">Visas</div>
+            <div className="text-xs md:text-sm text-gray-300">Successful processing</div>
           </div>
-        )}
+          
+          {/* Happy Customers */}
+          <div className="flex-shrink-0 w-[180px] md:w-auto bg-white bg-opacity-10 backdrop-blur-sm rounded-lg p-4 md:p-6 border border-white border-opacity-20">
+            <div className="text-2xl md:text-4xl font-bold text-white mb-1 animate-pulse">
+              {formatNumber(animatedStats.happy_customers)}+
+            </div>
+            <div className="text-sm md:text-lg text-gray-200 font-semibold">Happy Clients</div>
+            <div className="text-xs md:text-sm text-gray-300">Satisfied customers</div>
+          </div>
+        </div>
       </div>
     </section>
   );
