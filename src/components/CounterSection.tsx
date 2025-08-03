@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 
@@ -27,6 +26,15 @@ const CounterSection = () => {
     visa_booked: 0,
     happy_customers: 0
   });
+  const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
+
+  useEffect(() => {
+    const handleResize = () => {
+      setIsMobile(window.innerWidth < 768);
+    };
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
 
   useEffect(() => {
     fetchStats();
@@ -37,15 +45,13 @@ const CounterSection = () => {
     if (backgrounds.length > 1) {
       const interval = setInterval(() => {
         setCurrentBgIndex((prev) => (prev + 1) % backgrounds.length);
-      }, 5000); // Change background every 5 seconds
-
+      }, 5000);
       return () => clearInterval(interval);
     }
   }, [backgrounds]);
 
   useEffect(() => {
-    // Animate counters when stats change
-    const duration = 2000; // 2 seconds
+    const duration = 2000;
     const steps = 60;
     const stepDuration = duration / steps;
 
@@ -117,8 +123,7 @@ const CounterSection = () => {
   const currentBackground = backgrounds[currentBgIndex];
 
   return (
-   <section style={{ paddingTop: '1.5rem', paddingBottom: '3rem' }} className="relative overflow-hidden md:pt-8 md:pb-20">
-
+    <section className="relative overflow-hidden pt-6 pb-12 md:pt-8 md:pb-20">
       {/* Background Image */}
       {currentBackground && (
         <div 
@@ -130,40 +135,78 @@ const CounterSection = () => {
       )}
       
       {/* Content */}
-      <div className="relative z-10 max-w-7xl mx-auto px-4">
-        <div className="text-center mb-8 md:mb-12">
-          <h2 className="text-2xl md:text-3xl lg:text-4xl font-bold text-white mb-3 md:mb-4">Our Achievements</h2>
-          <p className="text-base md:text-lg lg:text-xl text-gray-200">Trusted by thousands of travelers worldwide</p>
+      <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6">
+        <div className="text-center mb-6 md:mb-12">
+          <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-white mb-2 md:mb-4">
+            Our Achievements
+          </h2>
+          <p className="text-sm sm:text-base md:text-lg text-gray-200">
+            Trusted by thousands of travelers worldwide
+          </p>
         </div>
         
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8">
-          {/* Packages Booked */}
-          <div className="text-center bg-white bg-opacity-10 backdrop-blur-sm rounded-lg p-6 md:p-8 border border-white border-opacity-20">
-            <div className="text-3xl md:text-4xl lg:text-5xl font-bold text-white mb-2 animate-pulse">
-              {formatNumber(animatedStats.packages_booked)}+
+        {isMobile ? (
+          <div className="space-y-4">
+            {/* Mobile Carousel-like Layout */}
+            <div className="flex overflow-x-auto pb-4 -mx-4 px-4 space-x-4">
+              {/* Packages Booked */}
+              <div className="flex-shrink-0 w-64 bg-white bg-opacity-10 backdrop-blur-sm rounded-lg p-4 border border-white border-opacity-20">
+                <div className="text-3xl font-bold text-white mb-1 animate-pulse">
+                  {formatNumber(animatedStats.packages_booked)}+
+                </div>
+                <div className="text-base text-gray-200 font-semibold">Packages Booked</div>
+                <div className="text-gray-300 text-xs">Happy travelers exploring the world</div>
+              </div>
+              
+              {/* Visa Booked */}
+              <div className="flex-shrink-0 w-64 bg-white bg-opacity-10 backdrop-blur-sm rounded-lg p-4 border border-white border-opacity-20">
+                <div className="text-3xl font-bold text-white mb-1 animate-pulse">
+                  {formatNumber(animatedStats.visa_booked)}+
+                </div>
+                <div className="text-base text-gray-200 font-semibold">Visa Applications</div>
+                <div className="text-gray-300 text-xs">Successful visa processing</div>
+              </div>
+              
+              {/* Happy Customers */}
+              <div className="flex-shrink-0 w-64 bg-white bg-opacity-10 backdrop-blur-sm rounded-lg p-4 border border-white border-opacity-20">
+                <div className="text-3xl font-bold text-white mb-1 animate-pulse">
+                  {formatNumber(animatedStats.happy_customers)}+
+                </div>
+                <div className="text-base text-gray-200 font-semibold">Happy Customers</div>
+                <div className="text-gray-300 text-xs">Satisfied with our services</div>
+              </div>
             </div>
-            <div className="text-lg md:text-xl text-gray-200 font-semibold">Packages Booked</div>
-            <div className="text-gray-300 mt-1 md:mt-2 text-sm md:text-base">Happy travelers exploring the world</div>
           </div>
-          
-          {/* Visa Booked */}
-          <div className="text-center bg-white bg-opacity-10 backdrop-blur-sm rounded-lg p-6 md:p-8 border border-white border-opacity-20">
-            <div className="text-3xl md:text-4xl lg:text-5xl font-bold text-white mb-2 animate-pulse">
-              {formatNumber(animatedStats.visa_booked)}+
+        ) : (
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 md:gap-8">
+            {/* Packages Booked */}
+            <div className="text-center bg-white bg-opacity-10 backdrop-blur-sm rounded-lg p-6 md:p-8 border border-white border-opacity-20">
+              <div className="text-3xl md:text-4xl lg:text-5xl font-bold text-white mb-2 animate-pulse">
+                {formatNumber(animatedStats.packages_booked)}+
+              </div>
+              <div className="text-lg md:text-xl text-gray-200 font-semibold">Packages Booked</div>
+              <div className="text-gray-300 mt-1 md:mt-2 text-sm md:text-base">Happy travelers exploring the world</div>
             </div>
-            <div className="text-lg md:text-xl text-gray-200 font-semibold">Visa Applications</div>
-            <div className="text-gray-300 mt-1 md:mt-2 text-sm md:text-base">Successful visa processing</div>
-          </div>
-          
-          {/* Happy Customers */}
-          <div className="text-center bg-white bg-opacity-10 backdrop-blur-sm rounded-lg p-6 md:p-8 border border-white border-opacity-20">
-            <div className="text-3xl md:text-4xl lg:text-5xl font-bold text-white mb-2 animate-pulse">
-              {formatNumber(animatedStats.happy_customers)}+
+            
+            {/* Visa Booked */}
+            <div className="text-center bg-white bg-opacity-10 backdrop-blur-sm rounded-lg p-6 md:p-8 border border-white border-opacity-20">
+              <div className="text-3xl md:text-4xl lg:text-5xl font-bold text-white mb-2 animate-pulse">
+                {formatNumber(animatedStats.visa_booked)}+
+              </div>
+              <div className="text-lg md:text-xl text-gray-200 font-semibold">Visa Applications</div>
+              <div className="text-gray-300 mt-1 md:mt-2 text-sm md:text-base">Successful visa processing</div>
             </div>
-            <div className="text-lg md:text-xl text-gray-200 font-semibold">Happy Customers</div>
-            <div className="text-gray-300 mt-1 md:mt-2 text-sm md:text-base">Satisfied with our services</div>
+            
+            {/* Happy Customers */}
+            <div className="text-center bg-white bg-opacity-10 backdrop-blur-sm rounded-lg p-6 md:p-8 border border-white border-opacity-20">
+              <div className="text-3xl md:text-4xl lg:text-5xl font-bold text-white mb-2 animate-pulse">
+                {formatNumber(animatedStats.happy_customers)}+
+              </div>
+              <div className="text-lg md:text-xl text-gray-200 font-semibold">Happy Customers</div>
+              <div className="text-gray-300 mt-1 md:mt-2 text-sm md:text-base">Satisfied with our services</div>
+            </div>
           </div>
-        </div>
+        )}
       </div>
     </section>
   );
