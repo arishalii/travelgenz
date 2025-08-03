@@ -35,7 +35,7 @@ const Packages = () => {
   const [withFlights, setWithFlights] = useState(false);
   const [showMobileFilters, setShowMobileFilters] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
-  const packagesPerPage = 10;
+  const packagesPerPage = 6;
   
   const navigate = useNavigate();
   const location = useLocation();
@@ -46,7 +46,6 @@ const Packages = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        // Fetch packages
         const { data: packagesData, error: packagesError } = await supabase
           .from('packages')
           .select('*')
@@ -56,18 +55,12 @@ const Packages = () => {
         
         if (packagesError) throw packagesError;
 
-
-
-
-
-        // Fetch package details
         const { data: detailsData, error: detailsError } = await supabase
           .from('package_details')
           .select('package_id, activity_details, attractions');
         
         if (detailsError) throw detailsError;
 
-        // Create a map of package details by package_id
         const detailsMap = detailsData.reduce((acc, detail) => {
           acc[detail.package_id] = detail;
           return acc;
@@ -107,29 +100,35 @@ const Packages = () => {
     inputRef: React.RefObject<HTMLInputElement>,
     onFocus: (type: 'desktop' | 'mobile') => void 
   }) => (
-    <div className="space-y-6">
+    <div className="space-y-4">
       <div className="flex items-center justify-between">
         <h3 className="text-lg font-semibold">Filters</h3>
-        <Button variant="ghost" onClick={clearAllFilters} className="text-sm">
+        <Button 
+          variant="ghost" 
+          onClick={clearAllFilters} 
+          className="text-sm p-0 h-auto"
+          size="sm"
+        >
           Clear All
         </Button>
       </div>
 
       <div>
-        <label className="block text-sm font-medium mb-2">Destination</label>
+        <label className="block text-sm font-medium mb-1">Destination</label>
         <Input
           ref={inputRef}
           placeholder="Search destination..."
           value={searchInput}
           onChange={handleSearchChange}
           onFocus={() => onFocus(showMobileFilters ? 'mobile' : 'desktop')}
+          className="text-sm"
         />
       </div>
 
       <div>
-        <label className="block text-sm font-medium mb-2">Country</label>
+        <label className="block text-sm font-medium mb-1">Country</label>
         <Select value={selectedCountry} onValueChange={setSelectedCountry}>
-          <SelectTrigger>
+          <SelectTrigger className="text-sm">
             <SelectValue placeholder="All Countries" />
           </SelectTrigger>
           <SelectContent>
@@ -142,7 +141,7 @@ const Packages = () => {
       </div>
 
       <div>
-        <label className="block text-sm font-medium mb-2">Price Range</label>
+        <label className="block text-sm font-medium mb-1">Price Range</label>
         <Select
           value={`${priceRange[0]}-${priceRange[1]}`}
           onValueChange={(value) => {
@@ -151,7 +150,7 @@ const Packages = () => {
             setCurrentPage(1);
           }}
         >
-          <SelectTrigger>
+          <SelectTrigger className="text-sm">
             <SelectValue placeholder="Select Price Range" />
           </SelectTrigger>
           <SelectContent>
@@ -165,12 +164,12 @@ const Packages = () => {
       </div>
 
       <div>
-        <label className="block text-sm font-medium mb-2">Mood</label>
+        <label className="block text-sm font-medium mb-1">Mood</label>
         <Select value={selectedMood} onValueChange={(value) => {
           setSelectedMood(value);
           setCurrentPage(1);
         }}>
-          <SelectTrigger>
+          <SelectTrigger className="text-sm">
             <SelectValue placeholder="All Moods" />
           </SelectTrigger>
           <SelectContent>
@@ -183,12 +182,12 @@ const Packages = () => {
       </div>
 
       <div>
-        <label className="block text-sm font-medium mb-2">Trip Type</label>
+        <label className="block text-sm font-medium mb-1">Trip Type</label>
         <Select value={selectedTripType} onValueChange={(value) => {
           setSelectedTripType(value);
           setCurrentPage(1);
         }}>
-          <SelectTrigger>
+          <SelectTrigger className="text-sm">
             <SelectValue placeholder="All Types" />
           </SelectTrigger>
           <SelectContent>
@@ -201,12 +200,12 @@ const Packages = () => {
       </div>
 
       <div>
-        <label className="block text-sm font-medium mb-2">Deal Type</label>
+        <label className="block text-sm font-medium mb-1">Deal Type</label>
         <Select value={selectedDealType} onValueChange={(value) => {
           setSelectedDealType(value);
           setCurrentPage(1);
         }}>
-          <SelectTrigger>
+          <SelectTrigger className="text-sm">
             <SelectValue placeholder="All Deals" />
           </SelectTrigger>
           <SelectContent>
@@ -219,12 +218,12 @@ const Packages = () => {
       </div>
 
       <div>
-        <label className="block text-sm font-medium mb-2">Hotel Category</label>
+        <label className="block text-sm font-medium mb-1">Hotel Category</label>
         <Select value={selectedHotelCategory} onValueChange={(value) => {
           setSelectedHotelCategory(value);
           setCurrentPage(1);
         }}>
-          <SelectTrigger>
+          <SelectTrigger className="text-sm">
             <SelectValue placeholder="All Categories" />
           </SelectTrigger>
           <SelectContent>
@@ -236,20 +235,19 @@ const Packages = () => {
         </Select>
       </div>
 
-      <div>
-        <div className="flex items-center space-x-2">
-          <Checkbox
-            id="with-flights-sidebar"
-            checked={withFlights}
-            onCheckedChange={(checked) => {
-              setWithFlights(checked === true);
-              setCurrentPage(1);
-            }}
-          />
-          <label htmlFor="with-flights-sidebar" className="text-sm font-medium">
-            With Flights
-          </label>
-        </div>
+      <div className="flex items-center space-x-2 pt-2">
+        <Checkbox
+          id="with-flights-sidebar"
+          checked={withFlights}
+          onCheckedChange={(checked) => {
+            setWithFlights(checked === true);
+            setCurrentPage(1);
+          }}
+          className="h-4 w-4"
+        />
+        <label htmlFor="with-flights-sidebar" className="text-sm">
+          With Flights
+        </label>
       </div>
     </div>
   ), [searchInput, selectedCountry, selectedMood, selectedTripType, selectedDealType, selectedHotelCategory, priceRange, withFlights, packages, showMobileFilters]);
@@ -323,7 +321,7 @@ const Packages = () => {
   };
 
   return (
-    <div className="min-h-screen flex flex-col">
+    <div className="min-h-screen flex flex-col bg-gray-50">
       <Navbar />
       
       <main className="flex-grow">
@@ -331,8 +329,8 @@ const Packages = () => {
           <PackageBanner searchQuery={searchInput} />
         </div>
 
-        <div className="max-w-7xl mx-auto px-4 py-4 md:py-8">
-          <div className="lg:hidden mb-4 px-2">
+        <div className="max-w-7xl mx-auto px-2 sm:px-4 py-4">
+          <div className="lg:hidden mb-4">
             <Sheet open={showMobileFilters} onOpenChange={setShowMobileFilters}>
               <SheetTrigger asChild>
                 <Button variant="outline" className="w-full">
@@ -347,7 +345,7 @@ const Packages = () => {
                     Filter packages by your preferences
                   </SheetDescription>
                 </SheetHeader>
-                <div className="mt-6">
+                <div className="mt-4">
                   <FilterContent inputRef={inputRef} onFocus={handleInputFocus} />
                 </div>
               </SheetContent>
@@ -355,21 +353,22 @@ const Packages = () => {
           </div>
 
           <div className="flex gap-4 md:gap-6 lg:gap-8">
-            <div className="hidden lg:block w-1/4 max-h-[804px] bg-white rounded-xl shadow-lg p-4 border border-gray-100 hover:shadow-xl transition-shadow duration-300 overflow-y-auto">
+            <div className="hidden lg:block w-1/4 max-h-[804px] bg-white rounded-xl shadow-sm p-4 border border-gray-200 overflow-y-auto">
               <FilterContent inputRef={inputRef} onFocus={handleInputFocus} />
             </div>
 
-            <div className="w-full lg:w-3/4 px-2 lg:px-0">
-              <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-6 gap-4">
-                <h1 className="text-lg md:text-xl lg:text-2xl font-bold">
-                  {searchInput ? `Packages for "${searchInput}"` : 'All Packages'} ({sortedPackages.length} packages found)
+            <div className="w-full lg:w-3/4">
+              <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-4 gap-3">
+                <h1 className="text-lg font-bold">
+                  {searchInput ? `Packages for "${searchInput}"` : 'All Packages'} 
+                  <span className="text-sm font-normal text-gray-600 ml-2">({sortedPackages.length} found)</span>
                 </h1>
-                <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 md:gap-3">
+                <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2">
                   <Select value={sortBy} onValueChange={(value) => {
                     setSortBy(value);
                     setCurrentPage(1);
                   }}>
-                    <SelectTrigger className="w-full sm:w-36 md:w-40 text-sm">
+                    <SelectTrigger className="w-full sm:w-36 text-sm h-9">
                       <SelectValue placeholder="Sort by" />
                     </SelectTrigger>
                     <SelectContent>
@@ -387,8 +386,9 @@ const Packages = () => {
                         setWithFlights(checked === true);
                         setCurrentPage(1);
                       }}
+                      className="h-4 w-4"
                     />
-                    <label htmlFor="with-flights-top" className="text-xs md:text-sm">
+                    <label htmlFor="with-flights-top" className="text-xs">
                       With Flights
                     </label>
                   </div>
@@ -396,97 +396,92 @@ const Packages = () => {
               </div>
 
               {loading ? (
-                <div className="space-y-6">
+                <div className="space-y-4">
                   {[...Array(3)].map((_, i) => (
-                    <div key={i} className="flex flex-col md:flex-row gap-4 bg-white rounded-lg shadow-sm border animate-pulse p-4">
-                      <div className="w-full md:w-1/3 h-48 bg-gray-200 rounded-lg"></div>
-                      <div className="w-full md:w-2/3 space-y-3">
-                        <div className="h-6 bg-gray-200 rounded w-3/4"></div>
-                        <div className="h-4 bg-gray-200 rounded w-1/2"></div>
-                        <div className="h-4 bg-gray-200 rounded w-full"></div>
-                        <div className="h-4 bg-gray-200 rounded w-full"></div>
-                        <div className="h-4 bg-gray-200 rounded w-2/3"></div>
+                    <div key={i} className="flex flex-col sm:flex-row gap-3 bg-white rounded-lg shadow-sm border animate-pulse p-3">
+                      <div className="w-full sm:w-1/3 h-40 bg-gray-200 rounded-lg"></div>
+                      <div className="w-full sm:w-2/3 space-y-2">
+                        <div className="h-5 bg-gray-200 rounded w-3/4"></div>
+                        <div className="h-3 bg-gray-200 rounded w-1/2"></div>
+                        <div className="h-3 bg-gray-200 rounded w-full"></div>
+                        <div className="h-3 bg-gray-200 rounded w-full"></div>
+                        <div className="h-3 bg-gray-200 rounded w-2/3"></div>
                       </div>
                     </div>
                   ))}
                 </div>
               ) : (
                 <>
-                  <div className="space-y-6">
+                  <div className="space-y-4">
                     {currentPackages.map((pkg) => {
                       const activitiesCount = packageDetails[pkg.id]?.activity_details?.count || 0;
-                      // In the package map function, add this alongside activitiesCount:
-const attractionsCount = packageDetails[pkg.id]?.attractions?.length || 0;
+                      const attractionsCount = packageDetails[pkg.id]?.attractions?.length || 0;
                       
                       return (
                         <div 
                           key={pkg.id} 
-                          className="flex flex-col md:flex-row gap-3 md:gap-4 bg-white rounded-lg shadow-sm border overflow-hidden hover:shadow-md transition-shadow cursor-pointer"
+                          className="flex flex-col sm:flex-row gap-3 bg-white rounded-lg shadow-sm border overflow-hidden hover:shadow-md transition-shadow cursor-pointer"
                           onClick={() => handlePackageClick(pkg.id)}
                         >
-                          <div className="w-full md:w-1/3 relative">
+                          <div className="w-full sm:w-1/3 relative">
                             <img 
                               src={pkg.image} 
                               alt={pkg.title}
-                              className="w-full h-40 md:h-full object-cover"
+                              className="w-full h-[12rem] object-cover"
                             />
-                            <div className="absolute top-2 left-2 bg-blue-600 text-white px-1.5 md:px-2 py-0.5 md:py-1 rounded text-xs font-bold">
+                            <div className="absolute top-2 left-2 bg-blue-600 text-white px-1.5 py-0.5 rounded text-xs font-bold">
                               {pkg.duration}
                             </div>
                             {pkg.deal_type !== 'Regular' && (
-                              <div className="absolute top-2 right-2 bg-green-600 text-white px-1.5 md:px-2 py-0.5 md:py-1 rounded text-xs font-bold">
+                              <div className="absolute top-2 right-2 bg-green-600 text-white px-1.5 py-0.5 rounded text-xs font-bold">
                                 {pkg.deal_type}
                               </div>
                             )}
                           </div>
                           
-                          <div className="w-full md:w-2/3 p-3 md:p-4 flex flex-col justify-between">
+                          <div className="w-full sm:w-2/3 p-3 flex flex-col justify-between">
                             <div>
-                              <div className="flex justify-between items-start mb-2">
-                                <h3 className="font-semibold text-base md:text-lg lg:text-xl pr-2 line-clamp-2">{pkg.title}</h3>
+                              <div className="flex justify-between items-start mb-1">
+                                <h3 className="font-semibold text-base pr-2 line-clamp-2">{pkg.title}</h3>
                                 <div className="flex items-center text-yellow-500 flex-shrink-0">
-                                  <span className="text-sm">★</span>
-                                  <span className="text-sm ml-1">{pkg.rating}</span>
+                                  <span className="text-xs">★</span>
+                                  <span className="text-xs ml-0.5">{pkg.rating}</span>
                                 </div>
                               </div>
                               
-                              <p className="text-gray-600 mb-2 md:mb-3 text-sm md:text-base">{pkg.country}</p>
+                              <p className="text-gray-600 mb-2 text-sm">{pkg.country}</p>
                               
-                              <div className="grid grid-cols-1 sm:grid-cols-2 gap-1 md:gap-2 mb-3 md:mb-4">
-                              <div className="flex items-center text-xs md:text-sm text-gray-600">
-                                <span className="mr-1">✈️</span>
-                                <span className="truncate">{pkg.destinations?.join(', ') || 'Multiple destinations'}</span>
+                              <div className="grid grid-cols-2 gap-1 mb-2">
+                                <div className="flex items-center text-xs text-gray-600">
+                                  <span className="mr-1">✈️</span>
+                                  <span className="truncate">{pkg.destinations?.join(', ') || 'Multiple'}</span>
+                                </div>
+                                <div className="flex items-center text-xs text-gray-600">
+                                  <span className="mr-1">🏨</span>
+                                  <span className="truncate">{pkg.hotel_category}</span>
+                                </div>
+                                <div className="flex items-center text-xs text-gray-600">
+                                  <span className="mr-1">🎭</span>
+                                  <span>Activities: {activitiesCount}</span>
+                                </div>
+                                <div className="flex items-center text-xs text-gray-600">
+                                  <span className="mr-1">🏛️</span>
+                                  <span>Attractions: {attractionsCount}</span>
+                                </div>
                               </div>
-                              <div className="flex items-center text-xs md:text-sm text-gray-600">
-                                <span className="mr-1">🏨</span>
-                                <span>{pkg.hotel_category}</span>
-                              </div>
-                              <div className="flex items-center text-xs md:text-sm text-gray-600">
-                                <span className="mr-1">🎭</span>
-                                <span>Activities: {activitiesCount}</span>
-                              </div>
-                              <div className="flex items-center text-xs md:text-sm text-gray-600">
-                                <span className="mr-1">🏛️</span>
-                                <span>Attractions: {attractionsCount}</span>
-                              </div>
-                              <div className="flex items-center text-xs md:text-sm text-gray-600 sm:col-span-2">
-                                <span className="mr-1">🍽️</span>
-                                <span>{pkg.meals_included}</span>
-                              </div>
-                            </div>
                             </div>
                             
-                            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-end gap-2">
-                              <div className="text-xs md:text-sm text-gray-500">
+                            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-end gap-1">
+                              <div className="text-xs text-gray-500">
                                 <span>{pkg.trip_type}</span>
                               </div>
                               <div className="text-right">
                                 {pkg.original_price && (
-                                  <span className="text-xs md:text-sm text-red-500 line-through block">
+                                  <span className="text-xs text-red-500 line-through block">
                                     ₹{formatPrice(pkg.original_price)}
                                   </span>
                                 )}
-                                <div className="text-lg md:text-xl font-bold text-green-600">
+                                <div className="text-base font-bold text-green-600">
                                   ₹{formatPrice(pkg.price)}
                                   <span className="text-xs font-normal text-gray-500 block">per person</span>
                                 </div>
@@ -499,7 +494,7 @@ const attractionsCount = packageDetails[pkg.id]?.attractions?.length || 0;
                   </div>
 
                   {totalPages > 1 && (
-                    <div className="mt-8">
+                    <div className="mt-6">
                       <Pagination>
                         <PaginationContent>
                           <PaginationItem>
@@ -534,6 +529,7 @@ const attractionsCount = packageDetails[pkg.id]?.attractions?.length || 0;
                                     paginate(pageNum);
                                   }}
                                   isActive={currentPage === pageNum}
+                                  className="text-sm"
                                 >
                                   {pageNum}
                                 </PaginationLink>
@@ -559,9 +555,17 @@ const attractionsCount = packageDetails[pkg.id]?.attractions?.length || 0;
               )}
 
               {!loading && sortedPackages.length === 0 && (
-                <div className="text-center py-8 md:py-12">
-                  <h3 className="text-lg font-medium text-gray-900 mb-2">No packages found</h3>
-                  <p className="text-gray-600">Try adjusting your filters to see more results.</p>
+                <div className="text-center py-8">
+                  <h3 className="text-base font-medium text-gray-900 mb-1">No packages found</h3>
+                  <p className="text-sm text-gray-600">Try adjusting your filters to see more results.</p>
+                  <Button 
+                    variant="outline" 
+                    onClick={clearAllFilters} 
+                    className="mt-3 text-sm"
+                    size="sm"
+                  >
+                    Clear All Filters
+                  </Button>
                 </div>
               )}
             </div>
