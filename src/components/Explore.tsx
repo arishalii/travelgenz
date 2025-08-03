@@ -153,7 +153,8 @@ const DestinationCard = ({ destination, onClick, size }: {
             className="w-full h-full object-cover"
           />
           <div className="absolute inset-0 bg-black/40 flex items-center justify-center">
-            <h3 className={`font-semibold text-white ${dimensions[size].text} text-center px-1 sm:px-2 group-hover:text-travel-accent transition-colors`}>
+            <h3 className={`font-semibold text-white text-[0.65rem] text-center px-1 sm:px-2 group-hover:text-travel-accent transition-colors`}>
+
               {destination.name}
             </h3>
           </div>
